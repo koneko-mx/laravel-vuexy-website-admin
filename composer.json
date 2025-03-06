@@ -1,0 +1,36 @@
+{
+    "name": "koneko/laravel-vuexy-website-admin",
+    "description": "Laravel Vuexy Website Admin, un modulo de administracion de sitios web.",
+    "keywords": ["laravel", "koneko", "framework", "vuexy", "website", "admin", "mexico"],
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "koneko/laravel-vuexy-admin": "@dev",
+        "laravel/framework": "^11.31"
+    },
+    "autoload": {
+        "psr-4": {
+            "Koneko\\VuexyWebsiteAdmin\\": ""
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Koneko\\VuexyWebsiteAdmin\\Providers\\VuexyWebsiteAdminServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Arturo Corro Pacheco",
+            "email": "arturo@koneko.mx"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/koneko-mx/laravel-vuexy-website-admin",
+        "issues": "https://github.com/koneko-mx/laravel-vuexy-website-admin/issues"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

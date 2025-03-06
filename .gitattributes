@@ -1,0 +1,38 @@
+* text=auto eol=lf
+
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+/.github export-ignore
+CHANGELOG.md export-ignore
+.styleci.yml export-ignore
+
+# Ignorar archivos de configuración y herramientas de desarrollo
+.editorconfig export-ignore
+.prettierrc.json export-ignore
+.prettierignore export-ignore
+.eslintrc.json export-ignore
+
+# Ignorar node_modules y dependencias locales
+node_modules/ export-ignore
+vendor/ export-ignore
+
+# Ignorar archivos de build
+npm-debug.log export-ignore
+
+# Ignorar carpetas de logs y caché
+storage/logs/ export-ignore
+storage/framework/ export-ignore
+
+# Ignorar carpetas de compilación de frontend
+public/build/ export-ignore
+dist/ export-ignore
+
+# Ignorar archivos de CI/CD
+.github/ export-ignore
+.gitlab-ci.yml export-ignore
+.vscode/ export-ignore
+.idea/ export-ignore
