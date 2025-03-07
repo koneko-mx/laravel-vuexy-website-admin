@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "koneko/laravel-vuexy-admin": "@dev",
+        "koneko/laravel-vuexy-admin": "dev-main",
         "laravel/framework": "^11.31"
     },
     "autoload": {
