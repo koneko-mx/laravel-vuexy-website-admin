@@ -1,0 +1,66 @@
+[
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Inicio",
+        "en": "Home"
+      },
+      "url": "/",
+      "type": "custom",
+      "target": "_self",
+      "order": 1,
+      "icon": "ti ti-home"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Artículos",
+        "en": "Articles"
+      },
+      "url": "/blog",
+      "type": "blog_article",
+      "target": "_self",
+      "order": 2,
+      "icon": "ti ti-news"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Categorías",
+        "en": "Categories"
+      },
+      "url": "/blog/categorias",
+      "type": "blog_category",
+      "target": "_self",
+      "order": 3,
+      "icon": "ti ti-list"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Iniciar Sesión",
+        "en": "Login"
+      },
+      "url": "/login",
+      "type": "custom",
+      "target": "_self",
+      "order": 4,
+      "icon": "ti ti-login",
+      "badge": "Nuevo",
+      "badge_color": "bg-success"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Cerrar Sesión",
+        "en": "Logout"
+      },
+      "url": "/logout",
+      "type": "action",
+      "target": "_self",
+      "order": 5,
+      "icon": "ti ti-logout",
+      "method": "POST",
+      "roles": ["authenticated"]
+    }
+]

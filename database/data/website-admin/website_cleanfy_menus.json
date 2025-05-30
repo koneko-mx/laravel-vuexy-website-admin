@@ -1,0 +1,74 @@
+[
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Inicio",
+        "en": "Home"
+      },
+      "route_name": "website.home",
+      "type": "custom",
+      "target": "_self",
+      "order": 1,
+      "icon": "ti ti-home"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Nosotros",
+        "en": "About Us"
+      },
+      "route_name": "website.about",
+      "type": "custom",
+      "target": "_self",
+      "order": 2,
+      "icon": "ti ti-users"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Servicios",
+        "en": "Services"
+      },
+      "route_name": "website.services",
+      "type": "custom",
+      "target": "_self",
+      "order": 3,
+      "icon": "ti ti-briefcase"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Portafolio",
+        "en": "Portfolio"
+      },
+      "route_name": "website.portfolio",
+      "type": "custom",
+      "target": "_self",
+      "order": 4,
+      "icon": "ti ti-photo"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Testimonios",
+        "en": "Testimonials"
+      },
+      "route_name": "website.testimonials",
+      "type": "custom",
+      "target": "_self",
+      "order": 5,
+      "icon": "ti ti-messages"
+    },
+    {
+      "menu_slug": "main-header",
+      "title": {
+        "es": "Contacto",
+        "en": "Contact"
+      },
+      "route_name": "website.contact",
+      "type": "custom",
+      "target": "_self",
+      "order": 6,
+      "icon": "ti ti-phone-call"
+    }
+]

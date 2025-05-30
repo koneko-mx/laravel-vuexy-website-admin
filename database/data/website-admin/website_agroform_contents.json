@@ -1,0 +1,192 @@
+[
+    {
+      "site_id": 1,
+      "title": "Agroform",
+      "slug": "",
+      "description": "Bienvenido a agroform, soluciones tecnológicas para empresas.",
+      "keywords": ["agroform", "erp", "tecnología", "soluciones"],
+      "template": "home",
+      "type": "page",
+      "is_partial": false,
+      "seo_profile_id": "inicio-agroform",
+      "seo_overrides": null,
+      "canonical_url": "https://agroform.com.mx",
+      "content_blocks": [
+        {"type": "hero", "title": "Soluciones Tecnológicas para tu Empresa", "subtitle": "Desde ERP hasta eCommerce", "image": "/images/hero.jpg"},
+        {"type": "features", "items": [{"icon": "ti ti-server", "label": "Infraestructura"}, {"icon": "ti ti-code", "label": "Desarrollo a medida"}]},
+        {"type": "cta", "text": "Solicita una demo sin costo", "button": "Agendar llamada"}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Nosotros",
+      "slug": "nosotros",
+      "description": "Conoce la historia, visión y equipo de Koneko.",
+      "keywords": ["nosotros", "equipo", "historia", "koneko"],
+      "template": "default",
+      "type": "page",
+      "is_partial": false,
+      "seo_profile_id": "inicio-agroform",
+      "seo_overrides": null,
+      "canonical_url": "https://agroform.com.mx/nosotros",
+      "content_blocks": [
+        {"type": "text", "heading": "¿Quiénes somos?", "content": "Somos una empresa de tecnología con sede en México..."},
+        {"type": "team", "members": [{"name": "Arturo", "role": "Director Técnico"}, {"name": "Laura", "role": "Marketing"}]}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Servicios",
+      "slug": "servicios",
+      "description": "Explora nuestros servicios: ERP, eCommerce, hosting y más.",
+      "keywords": ["erp", "servicios", "agroform", "sistemas"],
+      "template": "services",
+      "type": "page",
+      "is_partial": false,
+      "seo_profile_id": "servicios-agroform",
+      "seo_overrides": null,
+      "canonical_url": "https://agroform.com.mx/servicios",
+      "content_blocks": [
+        {"type": "service_list", "items": [
+          {"title": "ERP Agroform", "description": "Sistema de gestión empresarial completo"},
+          {"title": "Tienda Virtual", "description": "Ecommerce 100% administrable con SEO nativo"},
+          {"title": "Infraestructura", "description": "Servidores, VPS, Proxmox y más"}
+        ]}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Contacto",
+      "slug": "contacto",
+      "description": "Contáctanos para resolver tus dudas o agendar una demo.",
+      "keywords": ["contacto", "soporte", "demo", "ayuda"],
+      "template": "contact",
+      "type": "page",
+      "is_partial": false,
+      "seo_profile_id": null,
+      "seo_overrides": null,
+      "canonical_url": "https://agroform.com.mx/contacto",
+      "content_blocks": [
+        {"type": "form", "fields": ["nombre", "email", "mensaje"], "submit_label": "Enviar mensaje"},
+        {"type": "map", "lat": 19.4326, "lng": -99.1332}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Aviso de Privacidad",
+      "slug": "aviso-privacidad",
+      "description": "Consulta nuestro aviso de privacidad actualizado.",
+      "keywords": ["legal", "privacidad", "datos personales"],
+      "template": "legal",
+      "type": "page",
+      "is_partial": false,
+      "seo_profile_id": null,
+      "seo_overrides": null,
+      "canonical_url": "https://agroform.com.mx/aviso-privacidad",
+      "content_blocks": [
+        {"type": "text", "heading": "Política de privacidad", "content": "Tus datos son importantes para nosotros..."}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Preguntas Frecuentes",
+      "slug": "faq",
+      "description": "Resuelve tus dudas rápidamente con nuestras respuestas frecuentes.",
+      "keywords": ["faq", "dudas", "soporte"],
+      "template": "faq",
+      "type": "page",
+      "is_partial": true,
+      "seo_profile_id": null,
+      "seo_overrides": null,
+      "canonical_url": null,
+      "content_blocks": [
+        {"type": "faq", "items": [
+          {"q": "¿Tienen soporte técnico?", "a": "Sí, disponible 24/7 para clientes activos."},
+          {"q": "¿Qué formas de pago aceptan?", "a": "Transferencia, tarjeta y criptomonedas."}
+        ]}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Header Principal",
+      "slug": "header-principal",
+      "description": "Encabezado superior con navegación.",
+      "keywords": [],
+      "template": null,
+      "type": "partial",
+      "is_partial": true,
+      "seo_profile_id": 1,
+      "seo_overrides": null,
+      "canonical_url": null,
+      "content_blocks": [
+        {"type": "menu", "menu_slug": "principal"}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Footer General",
+      "slug": "footer-general",
+      "description": "Pie de página con enlaces y datos legales.",
+      "keywords": [],
+      "template": null,
+      "type": "partial",
+      "is_partial": true,
+      "seo_profile_id": null,
+      "seo_overrides": null,
+      "canonical_url": null,
+      "content_blocks": [
+        {"type": "footer", "links": ["inicio", "servicios", "contacto"]}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Categoría: Blog",
+      "slug": "blog",
+      "description": "Explora nuestros artículos de tecnología y negocios.",
+      "keywords": ["blog", "noticias", "tips", "artículos"],
+      "template": "blog_index",
+      "type": "category",
+      "is_partial": false,
+      "seo_profile_id": "blog",
+      "seo_overrides": null,
+      "canonical_url": "https://agroform.com.mx/blog",
+      "content_blocks": [],
+      "is_draft": false,
+      "is_sensitive": false
+    },
+    {
+      "site_id": 1,
+      "title": "Artículo: Ventajas del ERP",
+      "slug": "blog/ventajas-del-erp",
+      "description": "Descubre cómo un ERP puede transformar tu empresa.",
+      "keywords": ["erp", "ventajas", "productividad", "sistemas"],
+      "template": "blog_article",
+      "type": "blog",
+      "is_partial": false,
+      "seo_profile_id": "promocion-computadoras-gamer",
+      "seo_overrides": null,
+      "canonical_url": "https://agroform.com.mx/blog/ventajas-del-erp",
+      "content_blocks": [
+        {"type": "text", "heading": "Beneficios del ERP", "content": "Centralización de procesos, automatización..."},
+        {"type": "image", "src": "/images/blog/erp-benefits.jpg", "alt": "ERP y eficiencia empresarial"}
+      ],
+      "is_draft": false,
+      "is_sensitive": false
+    }
+]
