@@ -1,39 +1,39 @@
-# 📜 CHANGELOG - Laravel Vuexy Website Admin
+# 📦 CHANGELOG
 
-Este documento sigue el formato [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
-## [0.1.0] - ALPHA - 2024-03-05
-
-### ✨ Added (Agregado)
-- 🚀 Primera versión alpha de la librería.
-- 🔹 Implementación inicial de [funcionalidad clave 1].
-- 🔹 Integración con [dependencia o servicio principal].
-- 🔹 Soporte para [Laravel/Vuexy Admin, si aplica].
-
-### 🛠 Changed (Modificado)
-- 🔄 Optimización de [código o estructura interna].
-
-### 🐛 Fixed (Correcciones)
-- 🐞 Correcciones iniciales en [migraciones, modelos, servicios, etc.].
+Todos los cambios importantes de este proyecto se documentarán en este archivo.  
+Este proyecto sigue [Semantic Versioning](https://semver.org/lang/es/).
 
 ---
 
-## 📅 Próximos Cambios Planeados
-- 📊 **Mejoras en [feature futuro]**.
-- 🏪 **Compatibilidad con [Laravel 11, Vuexy, etc.]**.
-- 📍 **Integración con [API o funcionalidad esperada]**.
+## 🧪 Versión en desarrollo (`dev-develop`)
+
+Este módulo está en desarrollo activo. No se ha publicado una versión estable ni beta formal.
+
+**Añadido**
+
+- Registro de contenidos dinámicos en `website_contents`
+- Sistema de perfiles SEO (`website_seo_profiles`) con soporte para JSON-LD, Open Graph y Twitter
+- Menús públicos dinámicos (`website_menus`)
+- Control de visibilidad por rol, flag, permisos y autenticación
+- Soporte para múltiples sitios (`multi-site`) y variantes de página
+- Soporte para `hreflang`, `manifest.json`, y sitemap
+- Integración con módulos `vuexy-admin` y layouts frontales vía `template`, `variant`, `render_mode`
+
+**Notas**
+
+- Esta versión no es estable y está sujeta a cambios mayores.
+- Compatibilidad mínima: Laravel 11.31, PHP 8.2
+- Requiere `laravel-vuexy-admin` (`dev-develop`)
 
 ---
 
-**📌 Nota:** Esta es una versión **ALPHA**, aún en desarrollo.
+## 🚀 Planeación de versiones
+
+- `1.0.0-beta`: Publicación de la versión beta inicial con funcionalidades completas del CMS
+- `1.0.0`: Versión estable para producción
 
 ---
 
-## 🔄 Sincronización de Cambios
-Este `CHANGELOG.md` se actualiza primero en nuestro repositorio principal en **[Tea - Koneko Git](https://git.koneko.mx/koneko/laravel-vuexy-website-admin)** y luego se refleja en GitHub.
-Los cambios recientes pueden verse antes en **Tea** que en **GitHub** debido a la sincronización automática.
+## 📁 Histórico
 
----
-
-📅 Última actualización: **2024-03-05**.
-
+*Ninguna versión publicada aún.*

@@ -1,6 +1,6 @@
-import '@vuexy-admin/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/forms/formCustomListener';
-import registerLivewireHookOnce from '@vuexy-admin/livewire/registerLivewireHookOnce';
+//import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
+import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
+//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
 
 // Inicializar formularios de ajustes de social media
 window.SocialSettingsForm = new FormCustomListener({
@@ -128,6 +128,6 @@ window.SocialSettingsForm = new FormCustomListener({
     }
 });
 
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::social-media-settings', (component) => {
+registerLivewireHookOnce('morphed', 'vuexy-website-admin::social-card', (component) => {
     SocialSettingsForm.reloadValidation();
 });

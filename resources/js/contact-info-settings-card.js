@@ -1,10 +1,10 @@
-import '@vuexy-admin/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/forms/formCustomListener';
-import registerLivewireHookOnce from '@vuexy-admin/livewire/registerLivewireHookOnce';
+//import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
+import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
+//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
 
 // Inicializar formularios de ajustes de información de contacto
 window.ContactInfoSettingsForm = new FormCustomListener({
-    formSelector: '#website-contact-info-settings-card',
+    formSelector: '#website-contact-info-card-card',
     buttonSelectors: ['.btn-save', '.btn-cancel'],
     callbacks: [() => {}],
     dispatchOnSubmit: 'save',
@@ -130,13 +130,13 @@ window.ContactInfoSettingsForm = new FormCustomListener({
     }
 });
 
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::contact-info-settings', (component) => {
+registerLivewireHookOnce('morphed', 'vuexy-website-admin::contact-info-card', (component) => {
     ContactInfoSettingsForm.reloadValidation();
 });
 
 // Inicializar formularios de ajustes de ubicación
 window.LocationSettingsForm = new FormCustomListener({
-    formSelector: '#website-location-settings-card',
+    formSelector: '#website-location-card-card',
     buttonSelectors: ['.btn-save', '.btn-cancel'],
     callbacks: [() => {}],
     dispatchOnSubmit: 'save',
@@ -208,6 +208,6 @@ window.LocationSettingsForm = new FormCustomListener({
     }
 });
 
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::location-settings', (component) => {
+registerLivewireHookOnce('morphed', 'vuexy-website-admin::location-card', (component) => {
     LocationSettingsForm.reloadValidation();
 });

@@ -1,0 +1,92 @@
+[
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Inicio",
+            "en": "Home"
+        },
+        "type": "cms_page",
+        "order": 1,
+        "icon": "ti ti-home"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Nuestro corporativo",
+            "en": "About Us"
+        },
+        "type": "cms_page",
+        "order": 2,
+        "icon": "ti ti-users"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Soluciones y servicios",
+            "en": "Solutions and services"
+        },
+        "type": "cms_page",
+        "order": 3,
+        "icon": "ti ti-briefcase"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Valor y Beneficios",
+            "en": "Value and Benefits"
+        },
+        "type": "cms_page",
+        "order": 4,
+        "icon": "ti ti-briefcase"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Experiencia de éxito",
+            "en": "Success Experience"
+        },
+        "type": "cms_page",
+        "order": 5,
+        "icon": "ti ti-briefcase"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Blog y contenido",
+            "en": "Blog and content"
+        },
+        "type": "blog_article",
+        "order": 6,
+        "icon": "ti ti-news"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Residentes y usuarios",
+            "en": "Residents and users"
+        },
+        "type": "cms_page",
+        "order": 7,
+        "icon": "ti ti-users"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Contacto",
+            "en": "Contact"
+        },
+        "type": "action",
+        "order": 8,
+        "icon": "ti ti-phone-call"
+    },
+    {
+        "menu_slug": "main-header",
+        "title": {
+            "es": "Legales",
+            "en": "Legal"
+        },
+        "type": "cms_page",
+        "order": 9,
+        "icon": "ti ti-file"
+    }
+]

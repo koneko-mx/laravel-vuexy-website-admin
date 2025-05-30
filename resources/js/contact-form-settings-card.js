@@ -1,10 +1,10 @@
-import '@vuexy-admin/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/forms/formCustomListener';
-import registerLivewireHookOnce from '@vuexy-admin/livewire/registerLivewireHookOnce';
+//import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
+import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
+//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
 
 // Inicializar formularios de ajustes de Formularios de contacto
 window.ContactFormSettingsForm = new FormCustomListener({
-    formSelector: '#website-contact-form-settings-card',
+    formSelector: '#website-contact-form-card-card',
     buttonSelectors: ['.btn-save', '.btn-cancel'],
     callbacks: [() => {}],
     dispatchOnSubmit: 'save',
@@ -81,6 +81,6 @@ window.ContactFormSettingsForm = new FormCustomListener({
     }
 });
 
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::contact-form-settings', (component) => {
+registerLivewireHookOnce('morphed', 'vuexy-website-admin::contact-form-card', (component) => {
     ContactFormSettingsForm.reloadValidation();
 });

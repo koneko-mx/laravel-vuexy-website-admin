@@ -1,6 +1,6 @@
-import '@vuexy-admin/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/forms/formCustomListener';
-import registerLivewireHookOnce from '@vuexy-admin/livewire/registerLivewireHookOnce';
+//import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
+import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
+//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
 
 // Inicializar formularios de ajustes de chat
 window.ChatSettingsForm = new FormCustomListener({
