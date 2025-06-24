@@ -13,11 +13,10 @@ class WebsitePageController extends Controller
     /**
      * Renderiza la página pública principal.
      */
-    public function __invoke(Request $request, string $slug = null)
+    public function __invoke(Request $request, ?string $slug = null)
     {
-        $template = View::shared('_layout.template') ?? 'Porto';
-        $type     = View::shared('_layout.type') ?? 'page';
-        $view     = "vuexy-website-layout-porto::{$type}"; // SIEMPRE apunta a Porto
+        $template = View::shared('_layout.template') ?? 'layout-simple-koneko-samuel-coming-soon';
+        $view     = "{$template}::page";
 
         if (!View::exists($view)) {
             abort(404, "Plantilla no encontrada: {$view}");
@@ -25,7 +24,6 @@ class WebsitePageController extends Controller
 
         return view($view);
     }
-
 
     /**
      * Vista previa segura firmada.
@@ -36,8 +34,8 @@ class WebsitePageController extends Controller
             abort(403, 'Firma de vista previa no válida.');
         }
 
-        $template = View::shared('_layout.template') ?? 'anonymous_template';
-        $type     = View::shared('_layout.type') ?? 'page';
+        $template = View::shared('_template') ?? 'anonymous_template';
+        $type     = View::shared('_variant') ?? 'page';
         $view     = "{$template}::{$type}";
 
         if (!View::exists($view)) {

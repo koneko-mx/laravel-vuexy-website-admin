@@ -55,8 +55,6 @@ return [
 
     // 🏭 Proveedores de servicio, Middleware y Aliases (runtime)
     'middleware' => [
-        'website'         => WebsiteTemplateMiddleware::class,
-        'website-context' => WebsiteContextMiddleware::class,
         'website-content' => WebsiteContentMiddleware::class,
     ],
 
@@ -77,7 +75,7 @@ return [
             ],
         ],
         [
-            'middleware' => ['web', 'website-context', 'website-content'],
+            'middleware' => ['web', 'website-content'],
             'paths' => [
                 'routes/koneko_website_sites.php',
             ],

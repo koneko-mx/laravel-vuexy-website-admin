@@ -14,20 +14,14 @@ return new class extends Migration
         Schema::create('website_seo_profiles', function (Blueprint $table) {
             $table->smallIncrements('id');
 
-            $table->unsignedSmallInteger('site_id')->nullable()->index();
-
-            // Metadata
-            $table->string('type', 16)->default('page')->index();   // Enum: Content, Landing, Product, Category Blog
             $table->string('title')->nullable()->index();           // Título del perfil
             $table->string('slug')->unique();
+            $table->string('type', 16)->default('page')->index();   // Enum: Page, Landing, Product, Category Blog
+            $table->json('keywords')->nullable();
             $table->mediumText('description')->nullable();          // Descripción del perfil
 
             // Tipos de schema adicionales
             $table->json('schema_org')->nullable();
-
-            // Robots Directives
-            $table->boolean('noindex')->default(false);
-            $table->boolean('nofollow')->default(false);
 
             // Idioma y Geolocalización
             $table->string('locale', 8)->default('es-MX')->index(); // Para SEO internacional
@@ -56,10 +50,6 @@ return new class extends Migration
             $table->unsignedMediumInteger('created_by')->nullable();
             $table->unsignedMediumInteger('updated_by')->nullable();
             $table->timestamps();
-
-            // Indices
-            $table->index(['site_id', 'type']);
-            $table->index(['site_id', 'type', 'slug']);
 
             // Relaciones
             $table->foreign('created_by')->references('id')->on('users')->restrictOnDelete();

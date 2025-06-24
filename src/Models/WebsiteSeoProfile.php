@@ -30,14 +30,13 @@ class WebsiteSeoProfile extends Model implements AuditableContract
     // ===================== CONFIGURACIÓN =====================
 
     protected $fillable = [
-        'site_id',
-        'type',
         'title',
         'slug',
+        'type',
+        'keywords',
         'description',
+
         'schema_org',
-        'noindex',
-        'nofollow',
         'locale',
         'geo_location',
         'og_type',
@@ -59,22 +58,19 @@ class WebsiteSeoProfile extends Model implements AuditableContract
 
     protected $casts = [
         'type'          => WebsiteSeoProfileType::class,
+        'keywords'      => 'array',
         'schema_org'    => 'array',
         'geo_location'  => 'array',
         'json_ld'       => 'array',
-        'noindex'       => 'boolean',
-        'nofollow'      => 'boolean',
     ];
 
     protected $auditInclude = [
-        'site_id',
-        'type',
         'title',
         'slug',
+        'type',
+        'keywords',
         'description',
         'schema_org',
-        'noindex',
-        'nofollow',
         'locale',
         'geo_location',
         'og_type',
@@ -90,7 +86,7 @@ class WebsiteSeoProfile extends Model implements AuditableContract
         'twitter_site',
         'twitter_creator',
         'json_ld',
-    ];
+];
 
     // ===================== RELACIONES =====================
 
@@ -99,22 +95,12 @@ class WebsiteSeoProfile extends Model implements AuditableContract
         return $this->belongsTo(WebsiteSite::class);
     }
 
-    // ===================== SCOPES =====================
-
-    public function scopeActive($query) : Builder
-    {
-        return $query->where('noindex', false);
-    }
-
     // ===================== GETTERS =====================
 
     public function getMetaTags(): array
     {
         return [
-            'title'       => $this->title,
-            'description' => $this->description,
-            'robots'      => ($this->noindex ? 'noindex' : 'index') . ', ' . ($this->nofollow ? 'nofollow' : 'follow'),
-            'canonical'   => $this->og_url ?? null,
+            //'robots'      => ($this->noindex ? 'noindex' : 'index') . ', ' . ($this->nofollow ? 'nofollow' : 'follow'),
             'og'          => [
                 'type'        => $this->og_type,
                 'title'       => $this->og_title,

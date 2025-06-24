@@ -5,62 +5,76 @@ namespace Koneko\VuexyWebsiteAdmin\Application\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, View};
-use Koneko\VuexyWebsiteAdmin\Models\WebsiteContent;
+use Koneko\VuexyWebsiteAdmin\Application\Bootstrap\Context\SiteContext;
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteContent, WebsiteSite};
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class WebsiteContentMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $slug = $request->route('slug');
+        if (!str_contains($request->header('Accept'), 'text/html')) {
+            return $next($request);
+        }
 
+        $siteContext = app(SiteContext::class);
 
         /*
-        $site = app('currentSite');
+        $contact = [
+            'email' => $site->contact_email ?? '',
+            'phone' => $site->contact_phone ?? '',
+            'address' => $site->contact_address ?? '',
+        ];
 
-        $content = WebsiteContent::query()
-            ->with(['seoProfile'])
-            ->where('site_id', $site->id)
-            ->bySlug($slug)
-            ->firstOrFail();
+        /*
+        // Variables visuales generales (favicon, logo, layout, etc.)
+        $layoutVars = app(WebsiteLayoutVarsBuilder::class)->forSite($site)->get();
+
+        // Variables SEO (title, meta, index, canonical, etc.)
+        $seoVars = app(WebsiteSeoVarsBuilder::class)->forSite($site)->get();
+
+        // Variables sociales (twitter, opengraph, etc.)
+        $socialVars = app(WebsiteSocialVarsBuilder::class)->forSite($site)->get();
+        */
+
 
         if ($request->routeIs('website.preview') && $request->hasValidSignature()) {
             View::share('_isPreview', true);
 
         } else {
-            if ($content->is_draft && !Auth::check()) {
+            if ($siteContext->content->is_draft && !Auth::check()) {
                 throw new HttpException(403, 'Contenido no publicado.');
             }
 
             $now = now();
+
             if (
-                ($content->visible_from && $content->visible_from > $now) ||
-                ($content->visible_until && $content->visible_until < $now)
+                ($siteContext->content->visible_from && $siteContext->content->visible_from > $now) ||
+                ($siteContext->content->visible_until && $siteContext->content->visible_until < $now)
             ) {
                 throw new HttpException(403, 'Contenido no disponible.');
             }
 
             $user = Auth::user();
-            if (!empty($content->roles) && !$user?->hasAnyRole($content->roles)) {
+
+            if (!empty($siteContext->content->roles) && !$user?->hasAnyRole($siteContext->content->roles)) {
                 throw new HttpException(403, 'Acceso restringido.');
             }
 
-            if (!empty($content->permissions) && !$user?->hasAnyPermission($content->permissions)) {
+            if (!empty($siteContext->content->permissions) && !$user?->hasAnyPermission($siteContext->content->permissions)) {
                 throw new HttpException(403, 'Permiso insuficiente.');
             }
         }
 
-        $seo     = $content->getEffectiveSeoMetadata();
-        $layout  = $content->template ?? $site->template ?? 'vuexy-website-layout-porto';
-        $variant = $content->type ?? 'page';
-
+        // Compartir a todas las vistas públicas
         View::share([
-            '_content'  => $content,
-            '_seo'      => $seo,
-            '_template' => $layout,
-            '_variant'  => $variant,
+            '_layout' => $siteContext->getLayout(),
+            '_seo'    => $siteContext->getSeo(),
+            '_social'  => $siteContext->getSocial(),
+            '_contact' => $siteContext->getContact(),
+            '_content' => $siteContext->getContent(),
         ]);
-        */
+
 
         return $next($request);
     }

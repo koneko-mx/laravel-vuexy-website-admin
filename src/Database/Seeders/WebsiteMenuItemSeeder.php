@@ -6,7 +6,7 @@ namespace Koneko\VuexyWebsiteAdmin\Database\Seeders;
 
 use Koneko\VuexyAdmin\Support\Seeders\Base\AbstractDataSeeder;
 use Koneko\VuexyAdmin\Support\Traits\Seeders\HandlesFileSeeders;
-use Koneko\VuexyWebsiteAdmin\Models\{WebsiteMenuItem, WebsiteMenu};
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteMenuItem, WebsiteMenu, WebsiteSite};
 
 class WebsiteMenuItemSeeder extends AbstractDataSeeder
 {
@@ -17,25 +17,22 @@ class WebsiteMenuItemSeeder extends AbstractDataSeeder
     protected string|array $uniqueBy = ['menu_id', 'title'];
 
     // Ruta del archivo de datos
-    protected string $targetFile = 'website_menus_web_info.json';
+    //protected string $targetFile = 'website_menus_web_info.json';
 
     protected function sanitizeRow(array $row): array
     {
-        $menu = WebsiteMenu::where('slug', $row['menu_slug'])->firstOrFail();
-
-        $row['menu_id'] = $menu->id;
-        unset($row['menu_slug']);
-
-        // Asegurar que title sea array
-        if (isset($row['title']) && is_string($row['title'])) {
-            $decoded = json_decode($row['title'], true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $row['title'] = $decoded;
-            }
-        }
-
-        return $row;
+        return array_merge($row, [
+            'menu_id' => $this->findMenuId($row['site_domain'], $row['menu_slug']),
+        ]);
     }
 
+    protected function findSiteId($domain): ?int
+    {
+        return WebsiteSite::where('domain', $domain)->first()?->id;
+    }
+
+    protected function findMenuId($domain, $slug): ?int
+    {
+        return WebsiteMenu::where('slug', $slug)->where('site_id', $this->findSiteId($domain))->first()?->id;
+    }
 }

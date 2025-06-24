@@ -12,10 +12,10 @@ class WebsiteSeoProfileSeeder extends AbstractDataSeeder
 
     // Datos del Modelo
     protected string $model          = WebsiteSeoProfile::class;
-    protected string|array $uniqueBy = ['title', 'locale'];
+    protected string|array $uniqueBy = 'slug';
 
     // Ruta del archivo de datos
-    protected string $targetFile = 'website_seo_profiles.json';
+    //protected string $targetFile = 'website_seo_profiles.json';
 
     protected function sanitizeRow(array $row): array
     {

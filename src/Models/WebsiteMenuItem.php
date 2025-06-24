@@ -30,24 +30,29 @@ class WebsiteMenuItem extends Model implements AuditableContract
         'parent_id',
         'title',
         'type',
+
         'linkable_id',
         'linkable_type',
         'laravel_route',
         'url',
-        'js_event',
-        'target',
         'method',
+        'target',
+        'js_event',
+
         'icon',
         'badge',
         'badge_color',
+
         'roles',
         'permissions',
         'hide_if_authenticated',
         'hide_if_guest',
         'visible_from',
         'visible_until',
+
         'order',
         'is_active',
+
         'created_by',
         'updated_by'
     ];
@@ -64,15 +69,17 @@ class WebsiteMenuItem extends Model implements AuditableContract
     ];
 
     protected $auditInclude = [
+        'menu_id',
+        'parent_id',
         'title',
         'type',
         'linkable_id',
         'linkable_type',
         'laravel_route',
         'url',
-        'js_event',
-        'target',
         'method',
+        'target',
+        'js_event',
         'icon',
         'badge',
         'badge_color',

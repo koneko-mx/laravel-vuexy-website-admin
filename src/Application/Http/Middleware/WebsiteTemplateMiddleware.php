@@ -12,11 +12,6 @@ use Koneko\VuexyWebsiteAdmin\Website\UX\Template\WebsiteVarsBuilderService;
 
 class WebsiteTemplateMiddleware
 {
-    public function __construct()
-    {
-        //
-    }
-
     public function handle($request, Closure $next)
     {
         // Aplicar configuración de layout antes de que la vista se cargue

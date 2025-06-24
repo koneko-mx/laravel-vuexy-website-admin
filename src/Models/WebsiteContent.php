@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Koneko\VuexyWebsiteAdmin\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\{Auth, URL};
 use Koneko\VuexyAdmin\Support\Traits\Audit\{HasCreator, HasUpdater};
 use Koneko\VuexyAdmin\Support\Traits\Model\HasVuexyModelMetadata;
+use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteContentType;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 use OwenIt\Auditing\Auditable;
 
@@ -32,21 +31,51 @@ class WebsiteContent extends Model implements AuditableContract
 
     protected $fillable = [
         'site_id',
-        'seo_profile_id',
+        'type',
+        'keywords',
+
         'title',
         'slug',
+
         'description',
-        'keywords',
-        'template',
-        'template_variant',
-        'type',
+        'author',
+        'copyright',
+        'canonical_url',
+        'favicon_ns',
+        'seo_profile_id',
+        'template_id',
+
         'render_mode',
         'block_mode',
-        'resource',
+        'source',
         'render_as',
-        'canonical_url',
+
         'content_blocks',
-        'seo_overrides',
+
+        'noindex',
+        'nofollow',
+
+        'schema_org',
+
+        'locale',
+        'geo_location',
+
+        'og_type',
+        'og_title',
+        'og_description',
+        'og_image',
+        'og_url',
+        'og_site_name',
+
+        'twitter_card',
+        'twitter_title',
+        'twitter_description',
+        'twitter_image',
+        'twitter_site',
+        'twitter_creator',
+
+        'json_ld',
+
         'is_draft',
         'is_sensitive',
         'is_partial',
@@ -63,14 +92,15 @@ class WebsiteContent extends Model implements AuditableContract
     ];
 
     protected $casts = [
+        'type'           => WebsiteContentType::class,
         'keywords'       => 'array',
         'content_blocks' => 'array',
         'seo_overrides'  => 'array',
-        'roles'          => 'array',
-        'permissions'    => 'array',
         'is_draft'       => 'boolean',
         'is_sensitive'   => 'boolean',
         'is_partial'     => 'boolean',
+        'roles'          => 'array',
+        'permissions'    => 'array',
         'hide_if_authenticated' => 'boolean',
         'hide_if_guest'  => 'boolean',
         'visible_from'   => 'timestamp',
@@ -80,33 +110,6 @@ class WebsiteContent extends Model implements AuditableContract
     ];
 
     protected $auditInclude = [
-        'site_id',
-        'seo_profile_id',
-        'title',
-        'slug',
-        'description',
-        'keywords',
-        'template',
-        'template_variant',
-        'type',
-        'render_mode',
-        'block_mode',
-        'resource',
-        'render_as',
-        'canonical_url',
-        'content_blocks',
-        'seo_overrides',
-        'is_draft',
-        'is_sensitive',
-        'is_partial',
-        'roles',
-        'permissions',
-        'hide_if_authenticated',
-        'hide_if_guest',
-        'visible_from',
-        'visible_until',
-        'enable_cache',
-        'cache_ttl',
     ];
 
     // ===================== RELACIONES =====================
@@ -116,9 +119,14 @@ class WebsiteContent extends Model implements AuditableContract
         return $this->belongsTo(WebsiteSite::class);
     }
 
-    public function seoProfile() : BelongsTo
+    public function template(): BelongsTo
     {
-        return $this->belongsTo(WebsiteSeoProfile::class, 'seo_profile_id');
+        return $this->belongsTo(WebsiteTemplate::class);
+    }
+
+    public function seoProfile(): BelongsTo
+    {
+        return $this->belongsTo(WebsiteSeoProfile::class);
     }
 
     public function versions() : HasMany
@@ -132,6 +140,14 @@ class WebsiteContent extends Model implements AuditableContract
     {
         return $this->title;
     }
+
+    public function getEffectiveTitle(?WebsiteSite $site = null): string
+    {
+        $titleDomain = $site?->title?? $this->site?->title?? config('app.name');
+
+        return $titleDomain . ($this->title ? ' | ' . $this->title : '');
+    }
+
 
     public function getEffectiveSeoMetadata(): array
     {

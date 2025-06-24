@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('site_id')->index();
 
             $table->string('title')->index();
-            $table->string('slug')->unique();
+            $table->string('slug')->index();
 
             $table->string('description')->nullable();
             $table->boolean('is_active')->default(true)->index();
@@ -29,6 +29,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Indices
+            $table->unique(['site_id', 'slug']);
             $table->index(['site_id', 'slug', 'is_active']);
 
             // Relaciones

@@ -15,38 +15,40 @@ return new class extends Migration
             $table->smallIncrements('id');
 
             // Identidad
-            $table->string('name')->index();                 // Nombre visible en admin
-            $table->string('slug')->unique();                // Clave técnica
             $table->string('domain')->unique();              // Dominio principal (sin protocolo)
-            $table->string('template')->nullable();          // Componente layout activo
+            $table->json('keywords')->nullable();
 
-            // Estado
-            $table->string('status', 16)->default('active')->index();   // Estados especiales del sitio
-            $table->boolean('is_indexable')->default(true)->index();    // SEO: permitir indexado o no
+            $table->string('title')->index();
+            $table->string('description')->nullable();
+            $table->string('author')->nullable();
+            $table->string('copyright')->nullable();
+
+            // Robots Directives
+            $table->boolean('noindex')->default(false);
+            $table->boolean('nofollow')->default(false);
+            $table->boolean('allow_overwrite_robots')->default(false);
+
+            $table->boolean('force_https')->default(true);
+            $table->string('www_alias', 16)->default('redirect')->index();   // none, redirect no-www, www
 
             // SEO
-            $table->unsignedSmallInteger('seo_profile_id')->nullable()->index();
-            $table->string('canonical_url')->nullable();     // Canonical para root
+            $table->unsignedSmallInteger('template_id')->nullable()->index();
 
             // Configuración
             $table->json('config')->nullable();              // favicon, theme, brand, CDN, etc.
+
+            // Estado
+            $table->string('status', 16)->default('active')->index();   // active, maintenance, coming_soon
 
             // Auditoría
             $table->unsignedMediumInteger('created_by')->nullable()->index();
             $table->unsignedMediumInteger('updated_by')->nullable()->index();
             $table->timestamps();
 
-            // Indices
-            $table->index(['slug', 'status', 'is_indexable']);
-
             // Relaciones
-            $table->foreign('seo_profile_id')->references('id')->on('website_seo_profiles')->nullOnDelete();
+            $table->foreign('template_id')->references('id')->on('website_templates')->restrictOnDelete();
             $table->foreign('created_by')->references('id')->on('users')->restrictOnDelete();
             $table->foreign('updated_by')->references('id')->on('users')->restrictOnDelete();
-        });
-
-        Schema::table('website_seo_profiles', function (Blueprint $table) {
-            $table->foreign('site_id')->references('id')->on('website_sites')->cascadeOnDelete();
         });
     }
 
@@ -56,9 +58,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('website_sites');
-
-        Schema::table('website_seo_profiles', function (Blueprint $table) {
-            $table->dropForeign(['site_id']);
-        });
     }
 };

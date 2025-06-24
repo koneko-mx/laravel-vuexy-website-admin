@@ -22,43 +22,43 @@ class WebsiteSite extends Model implements AuditableContract
 
     // ===================== METADATOS =====================
 
-    public string $sortColumn        = 'name';
+    public string $sortColumn        = 'domain';
     public string $defaultSortOrder  = 'asc';
     public string $singularName      = 'sitio web';
-    public string $focusColumnOnOpen = 'name';
+    public string $focusColumnOnOpen = 'domain';
 
     // ===================== CONFIGURACIÓN =====================
 
     protected $fillable = [
-        'name',
-        'slug',
         'domain',
-        'template',
-        'status',
-        'is_indexable',
-        'seo_profile_id',
-        'canonical_url',
+        'keywords',
+        'title',
+        'description',
+        'author',
+        'copyright',
+        'noindex',
+        'nofollow',
+        'allow_overwrite_robots',
+        'force_https',
+        'www_alias',
+        'template_id',
         'config',
+        'status',
         'created_by',
         'updated_by'
     ];
 
     protected $casts = [
-        'status'       => WebsiteSiteStatus::class,
-        'is_indexable' => 'boolean',
-        'config'       => 'array',
+        'status' => WebsiteSiteStatus::class,
+        'keywords' => 'array',
+        'noindex' => 'boolean',
+        'nofollow' => 'boolean',
+        'allow_overwrite_robots' => 'boolean',
+        'force_https' => 'boolean',
+        'config' => 'array',
     ];
 
     protected $auditInclude = [
-        'name',
-        'slug',
-        'domain',
-        'template',
-        'status',
-        'is_indexable',
-        'seo_profile_id',
-        'canonical_url',
-        'config',
     ];
 
     // ===================== RELACIONES =====================
@@ -73,15 +73,15 @@ class WebsiteSite extends Model implements AuditableContract
         return $this->hasMany(WebsiteContent::class);
     }
 
-    public function seoProfiles(): BelongsTo
+    public function template(): BelongsTo
     {
-        return $this->belongsTo(WebsiteSeoProfile::class);
+        return $this->belongsTo(WebsiteTemplate::class);
     }
 
     // ===================== GETTERS =====================
 
     public function getDisplayName(): string
     {
-        return $this->name;
+        return $this->domain;
     }
 }
