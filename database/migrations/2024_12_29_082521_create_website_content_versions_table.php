@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('website_content_versions', function (Blueprint $table) {
-            $table->smallIncrements('id');
+            $table->mediumIncrements('id');
 
             $table->unsignedSmallInteger('website_content_id')->index();
-            $table->string('version_label')->nullable();
+            $table->string('version_label', 64)->index();
             $table->longText('content');
+            $table->boolean('is_current')->default(false);
             $table->json('metadata')->nullable();
 
             // Auditoria
@@ -24,6 +25,10 @@ return new class extends Migration
             $table->unsignedMediumInteger('updated_by')->nullable();
 
             $table->timestamps();
+
+            // Indices
+            $table->index(['website_content_id', 'version_label']);
+            $table->index(['website_content_id', 'is_current']);
 
             // Relaciones
             $table->foreign('website_content_id')->references('id')->on('website_contents')->cascadeOnDelete();

@@ -45,12 +45,9 @@ class WebsiteContent extends Model implements AuditableContract
         'seo_profile_id',
         'template_id',
 
-        'render_mode',
-        'block_mode',
-        'source',
-        'render_as',
-
+        'header_blocks',
         'content_blocks',
+        'footer_blocks',
 
         'noindex',
         'nofollow',
@@ -94,8 +91,9 @@ class WebsiteContent extends Model implements AuditableContract
     protected $casts = [
         'type'           => WebsiteContentType::class,
         'keywords'       => 'array',
+        'header_blocks'  => 'array',
         'content_blocks' => 'array',
-        'seo_overrides'  => 'array',
+        'footer_blocks'  => 'array',
         'is_draft'       => 'boolean',
         'is_sensitive'   => 'boolean',
         'is_partial'     => 'boolean',

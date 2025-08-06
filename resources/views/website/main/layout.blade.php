@@ -1,0 +1,35 @@
+@php
+    if (!function_exists('is_active_route')) {
+        function is_active_route($path, $activeClass = 'active', $default = '')
+        {
+            return request()->is($path) ? $activeClass : $default;
+        }
+    }
+@endphp
+
+
+@extends("{$_layout['package']}::layouts.{$_layout['template']}.master")
+
+@section('header')
+    @foreach ($_headerBlocks as $headerBlock)
+        @if ($headerBlock['type'] === 'blade-file')
+            @include($headerBlock['path'])
+        @endif
+    @endforeach
+@endsection
+
+@section('content')
+    @foreach ($_contentBlocks as $contentBlock)
+        @if ($contentBlock['type'] === 'blade-file')
+            @include($contentBlock['path'])
+        @endif
+    @endforeach
+@endsection
+
+@section('footer')
+    @foreach ($_footerBlocks as $footerBlock)
+        @if ($footerBlock['type'] === 'blade-file')
+            @include($footerBlock['path'])
+        @endif
+    @endforeach
+@endsection

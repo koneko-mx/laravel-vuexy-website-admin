@@ -25,6 +25,7 @@ class SiteContext
         }
 
         $slug = (string) $request->route('slug');
+
         $this->content = WebsiteContent::where('site_id', $this->website->id)
             ->bySlug($slug)
             ->first();
@@ -53,6 +54,7 @@ class SiteContext
     public function getLayout(): array
     {
         return [
+            'package'     => $this->template->package,
             'template'    => $this->template->layout,
             'theme-color' => $this->template->theme_color,
         ];
@@ -92,6 +94,21 @@ class SiteContext
     public function getContent(): string
     {
         return '';
+    }
+
+    public function getHeaderBlocks(): array
+    {
+        return $this->content->header_blocks ?? [];
+    }
+
+    public function getContentBlocks(): array
+    {
+        return $this->content->content_blocks ?? [];
+    }
+
+    public function getFooterBlocks(): array
+    {
+        return $this->content->footer_blocks ?? [];
     }
 
 

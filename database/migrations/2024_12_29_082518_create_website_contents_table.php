@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('author')->nullable();                   // Autor del website
             $table->string('copyright')->nullable();                // Copyright del website
 
-            $table->string('canonical_url')->nullable()->index();                 // Canonical para root
+            $table->string('canonical_url')->nullable()->index();   // Canonical para root
             $table->string('favicon_ns')->nullable();               // Favicon del website
 
             // SEO
@@ -34,13 +34,16 @@ return new class extends Migration
             $table->unsignedSmallInteger('template_id')->nullable()->index();
 
             // Render
-            $table->string('render_mode', 16)->default('static');
-            $table->string('block_mode', 16)->default('db');
-            $table->string('source', 16)->default('db');
-            $table->string('render_as')->nullable();
+            //$table->string('render_mode', 16)->default('static');
+            //$table->string('block_mode', 16)->default('db');
+            //$table->string('source', 16)->default('db');
+            //$table->string('render_as')->nullable();
 
             // Content
+            //$table->text('content')->nullable();
+            $table->json('header_blocks')->nullable();
             $table->json('content_blocks')->nullable();
+            $table->json('footer_blocks')->nullable();
 
             // Robots Directives
             $table->boolean('noindex')->nullable();
@@ -87,7 +90,7 @@ return new class extends Migration
 
             // Cache
             $table->boolean('enable_cache')->default(true)->index();
-            $table->unsignedSmallInteger('cache_ttl')->default(43800); // 43,800 minutos = 30 días
+            $table->unsignedSmallInteger('cache_ttl')->nullable();
 
             // Auditoria
             $table->unsignedMediumInteger('created_by')->nullable()->index();

@@ -14,27 +14,16 @@ return new class extends Migration
         Schema::create('website_content_blocks', function (Blueprint $table) {
             $table->smallIncrements('id');
 
-            $table->unsignedSmallInteger('content_id')->index();
-            $table->unsignedSmallInteger('parent_id')->nullable()->index();
+            $table->string('slug', 64)->nullable();
+            $table->string('description')->nullable();
 
-            $table->string('slug')->nullable();
-            $table->string('type', 32);
-            $table->string('mode', 16)->default('view');
-            $table->string('view_path')->nullable();
-            $table->string('component_class')->nullable();
-
-            $table->boolean('is_enabled')->default(true);
-            $table->boolean('enable_cache')->default(true);
-            $table->unsignedSmallInteger('cache_ttl')->default(60);
-
-            $table->json('settings')->nullable();
             $table->json('data')->nullable();
-            $table->unsignedSmallInteger('order')->default(0);
+            $table->json('settings')->nullable();
+
+            $table->boolean('enable_cache')->default(true);
+            $table->unsignedMediumInteger('cache_ttl')->default(43800); // 12 hours
 
             $table->timestamps();
-
-            $table->foreign('content_id')->references('id')->on('website_contents')->cascadeOnDelete();
-            $table->foreign('parent_id')->references('id')->on('website_content_blocks')->nullOnDelete();
         });
     }
 

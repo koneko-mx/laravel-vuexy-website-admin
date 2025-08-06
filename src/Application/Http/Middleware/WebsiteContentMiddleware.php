@@ -66,13 +66,16 @@ class WebsiteContentMiddleware
             }
         }
 
+
         // Compartir a todas las vistas públicas
         View::share([
-            '_layout' => $siteContext->getLayout(),
-            '_seo'    => $siteContext->getSeo(),
+            '_layout'  => $siteContext->getLayout(),
+            '_seo'     => $siteContext->getSeo(),
             '_social'  => $siteContext->getSocial(),
             '_contact' => $siteContext->getContact(),
-            '_content' => $siteContext->getContent(),
+            '_headerBlocks'  => $siteContext->getHeaderBlocks(),
+            '_contentBlocks' => $siteContext->getContentBlocks(),
+            '_footerBlocks'  => $siteContext->getFooterBlocks(),
         ]);
 
 

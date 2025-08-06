@@ -8,13 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Koneko\VuexyAdmin\Support\Traits\Audit\HasCreator;
 use Koneko\VuexyAdmin\Support\Traits\Model\HasVuexyModelMetadata;
-use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
-use OwenIt\Auditing\Auditable;
 
-class WebsiteContentVersion extends Model implements AuditableContract
+class WebsiteContentVersion extends Model
 {
     use HasVuexyModelMetadata;
-    use Auditable;
     use HasCreator;
 
     // ===================== METADATOS =====================
@@ -30,6 +27,7 @@ class WebsiteContentVersion extends Model implements AuditableContract
         'website_content_id',
         'version_label',
         'content',
+        'is_current',
         'metadata',
         'created_by',
         'updated_by',
@@ -37,14 +35,6 @@ class WebsiteContentVersion extends Model implements AuditableContract
 
     protected $casts = [
         'metadata' => 'array',
-    ];
-
-    protected $auditInclude = [
-        'website_content_id',
-        'version_label',
-        'content',
-        'metadata',
-        'created_by',
     ];
 
     // ===================== RELACIONES =====================

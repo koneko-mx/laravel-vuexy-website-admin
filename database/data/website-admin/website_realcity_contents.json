@@ -11,7 +11,7 @@
       "seo_profile_id": "inicio-realcity",
       "seo_overrides": null,
       "canonical_url": "https://realcity.com.mx",
-      "content_blocks": [
+      "content": [
         {"type": "hero", "title": "Soluciones Tecnológicas para tu Empresa", "subtitle": "Desde ERP hasta eCommerce", "image": "/images/hero.jpg"},
         {"type": "features", "items": [{"icon": "ti ti-server", "label": "Infraestructura"}, {"icon": "ti ti-code", "label": "Desarrollo a medida"}]},
         {"type": "cta", "text": "Solicita una demo sin costo", "button": "Agendar llamada"}
@@ -31,7 +31,7 @@
       "seo_profile_id": "inicio-realcity",
       "seo_overrides": null,
       "canonical_url": "https://realcity.com.mx/nosotros",
-      "content_blocks": [
+      "content": [
         {"type": "text", "heading": "¿Quiénes somos?", "content": "Somos una empresa de tecnología con sede en México..."},
         {"type": "team", "members": [{"name": "Arturo", "role": "Director Técnico"}, {"name": "Laura", "role": "Marketing"}]}
       ],
@@ -50,7 +50,7 @@
       "seo_profile_id": "servicios-realcity",
       "seo_overrides": null,
       "canonical_url": "https://realcity.com.mx/servicios",
-      "content_blocks": [
+      "content": [
         {"type": "service_list", "items": [
           {"title": "ERP Realcity", "description": "Sistema de gestión empresarial completo"},
           {"title": "Tienda Virtual", "description": "Ecommerce 100% administrable con SEO nativo"},
@@ -72,7 +72,7 @@
       "seo_profile_id": null,
       "seo_overrides": null,
       "canonical_url": "https://realcity.com.mx/contacto",
-      "content_blocks": [
+      "content": [
         {"type": "form", "fields": ["nombre", "email", "mensaje"], "submit_label": "Enviar mensaje"},
         {"type": "map", "lat": 19.4326, "lng": -99.1332}
       ],
@@ -91,7 +91,7 @@
       "seo_profile_id": null,
       "seo_overrides": null,
       "canonical_url": "https://realcity.com.mx/aviso-privacidad",
-      "content_blocks": [
+      "content": [
         {"type": "text", "heading": "Política de privacidad", "content": "Tus datos son importantes para nosotros..."}
       ],
       "is_draft": false,
@@ -109,7 +109,7 @@
       "seo_profile_id": null,
       "seo_overrides": null,
       "canonical_url": null,
-      "content_blocks": [
+      "content": [
         {"type": "faq", "items": [
           {"q": "¿Tienen soporte técnico?", "a": "Sí, disponible 24/7 para clientes activos."},
           {"q": "¿Qué formas de pago aceptan?", "a": "Transferencia, tarjeta y criptomonedas."}
@@ -130,7 +130,7 @@
       "seo_profile_id": 1,
       "seo_overrides": null,
       "canonical_url": null,
-      "content_blocks": [
+      "content": [
         {"type": "menu", "menu_slug": "principal"}
       ],
       "is_draft": false,
@@ -148,7 +148,7 @@
       "seo_profile_id": null,
       "seo_overrides": null,
       "canonical_url": null,
-      "content_blocks": [
+      "content": [
         {"type": "footer", "links": ["inicio", "servicios", "contacto"]}
       ],
       "is_draft": false,
@@ -166,7 +166,7 @@
       "seo_profile_id": "blog",
       "seo_overrides": null,
       "canonical_url": "https://realcity.com.mx/blog",
-      "content_blocks": [],
+      "content": [],
       "is_draft": false,
       "is_sensitive": false
     },
@@ -182,7 +182,7 @@
       "seo_profile_id": "promocion-computadoras-gamer",
       "seo_overrides": null,
       "canonical_url": "https://realcity.com.mx/blog/ventajas-del-erp",
-      "content_blocks": [
+      "content": [
         {"type": "text", "heading": "Beneficios del ERP", "content": "Centralización de procesos, automatización..."},
         {"type": "image", "src": "/images/blog/erp-benefits.jpg", "alt": "ERP y eficiencia empresarial"}
       ],

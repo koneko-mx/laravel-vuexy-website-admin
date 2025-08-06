@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Koneko\VuexyWebsiteAdmin\Models\WebsiteContent;
 
-class WebsiteContentMiddleware
+class WebsiteContentMiddlewareCopy
 {
     public function handle(Request $request, Closure $next)
     {

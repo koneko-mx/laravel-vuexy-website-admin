@@ -26,6 +26,7 @@ class WebsiteTemplate extends Model
     protected $fillable = [
         'title',
         'slug',
+        'package',
         'layout',
         'theme_color',
         'favicon',

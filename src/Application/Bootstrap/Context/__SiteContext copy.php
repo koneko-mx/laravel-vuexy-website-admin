@@ -8,7 +8,7 @@ use Koneko\VuexyWebsiteAdmin\Models\WebsiteSite;
 /**
  * 🧠 Resolve contexto de sitio activo en modo multisite
  */
-class SiteContext
+class SiteContextCopy
 {
     protected static ?WebsiteSite $resolved = null;
 

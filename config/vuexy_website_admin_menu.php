@@ -208,11 +208,4 @@ return [
             ],
         ]
     ],
-    'Plantillas' => [
-        '_meta' => [
-            'icon' => 'ti ti-template',
-            'description' => 'Gestiona las plantillas disponibles para tu sitio web.',
-            'after_to' => 'Blog',
-        ]
-    ],
 ];

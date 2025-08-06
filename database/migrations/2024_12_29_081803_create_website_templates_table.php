@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title')->index();
             $table->string('slug')->unique();
 
+            $table->string('package')->index();
             $table->string('layout')->index();
             $table->string('theme_color')->nullable();
             $table->json('favicon')->nullable();

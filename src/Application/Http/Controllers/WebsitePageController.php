@@ -13,8 +13,9 @@ class WebsitePageController extends Controller
     /**
      * Renderiza la página pública principal.
      */
-    public function __invoke(Request $request, ?string $slug = null)
+    public function __invoke(Request $request)
     {
+        /*
         $template = View::shared('_layout.template') ?? 'layout-simple-koneko-samuel-coming-soon';
         $view     = "{$template}::page";
 
@@ -22,18 +23,23 @@ class WebsitePageController extends Controller
             abort(404, "Plantilla no encontrada: {$view}");
         }
 
+        dump($view);
         return view($view);
+        */
+
+        return view('vuexy-website-admin::website.main.layout');
     }
 
     /**
      * Vista previa segura firmada.
      */
-    public function preview(Request $request, string $slug)
+    public function preview(Request $request)
     {
         if (! $request->hasValidSignature()) {
             abort(403, 'Firma de vista previa no válida.');
         }
 
+        /*
         $template = View::shared('_template') ?? 'anonymous_template';
         $type     = View::shared('_variant') ?? 'page';
         $view     = "{$template}::{$type}";
@@ -43,5 +49,8 @@ class WebsitePageController extends Controller
         }
 
         return view($view);
+        */
+
+        return view('vuexy-website-admin::website.main.layout');
     }
 }
