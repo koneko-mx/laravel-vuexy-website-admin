@@ -37,12 +37,11 @@ class WebsiteContentMiddleware
         $socialVars = app(WebsiteSocialVarsBuilder::class)->forSite($site)->get();
         */
 
-
         if ($request->routeIs('website.preview') && $request->hasValidSignature()) {
             View::share('_isPreview', true);
 
         } else {
-            if ($siteContext->content->is_draft && !Auth::check()) {
+            if ($siteContext->content->status == "draft" && !Auth::check()) {
                 throw new HttpException(403, 'Contenido no publicado.');
             }
 

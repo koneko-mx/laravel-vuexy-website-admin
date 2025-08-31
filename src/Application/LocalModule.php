@@ -1,11 +1,11 @@
 <?php
 
-namespace Koneko\VuexyWebsiteAdmin\Application;
+declare(strict_types=1);
 
-use Koneko\VuexyAdmin\Application\CoreModule;
+namespace Koneko\VuexyWebsiteAdmin\Application;
 
 final class LocalModule
 {
-    public const NAMESPACE = CoreModule::NAMESPACE;
     public const COMPONENT = 'website-admin';
+    public const MODULE    = 'koneko/laravel-vuexy-website-admin';
 }

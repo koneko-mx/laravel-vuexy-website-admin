@@ -3,7 +3,8 @@
 namespace Koneko\VuexyWebsiteAdmin\Application\Bootstrap\Context;
 
 use Illuminate\Http\Request;
-use Koneko\VuexyWebsiteAdmin\Models\{WebsiteContent, WebsiteSite, WebsiteTemplate, WebsiteSeoProfile};
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteContent, WebsiteSite, WebsiteSeoProfile};
 
 /**
  * 🧠 Resolve contexto de sitio activo en modo multisite
@@ -12,8 +13,6 @@ class SiteContext
 {
     public ?WebsiteSite $website = null;
     public ?WebsiteContent $content = null;
-    public ?WebsiteTemplate $template = null;
-    public ?WebsiteSeoProfile $seo_profile = null;
 
     public function __construct(Request $request)
     {
@@ -30,8 +29,9 @@ class SiteContext
             ->bySlug($slug)
             ->first();
 
-        $this->template    = $this->content->template ?? $this->website->template;
-        $this->seo_profile = $this->content->seo_profile;
+        if ($this->content === null) {
+            throw new HttpException(404, 'Contenido no publicado.');
+        }
     }
 
     /*
@@ -54,9 +54,9 @@ class SiteContext
     public function getLayout(): array
     {
         return [
-            'package'     => $this->template->package,
-            'template'    => $this->template->layout,
-            'theme-color' => $this->template->theme_color,
+            'package'     => $this->website->package,
+            'template'    => $this->website->layout,
+            'theme-color' => $this->getThemeColor(),
         ];
     }
 
@@ -64,20 +64,17 @@ class SiteContext
     {
         return [
             'title'       => $this->getTitle(),
-            'description' => $this->content->description ?? $this->website->description,
-            'keywords'    => $this->content->keywords,
+            'description' => $this->getDescription(),
+            'keywords'    => $this->getKeywords(),
             'author'      => $this->getAuthor(),
             'copyright'   => $this->getCopyright(),
             'robots'      => $this->getRobots(),
-            'language'    => $this->content->locale ?? $this->seo_profile->locale,
-            'canonical'   => $this->content->canonical,
+            'language'    => $this->getLanguage(),
+            'canonical'   => $this->getCanonicalUrl(),
             'hreflangs'   => $this->getHreflangs(),
             'og'          => $this->getOg(),
             'twitter'     => $this->getTwitter(),
             'favicon'     => $this->getFavicon(),
-            'theme-color' => $this->template->theme_color,
-            'manifest'    => $this->getManifest(),
-            'ld+json'     => $this->getLdJson(),
         ];
     }
 
@@ -111,10 +108,41 @@ class SiteContext
         return $this->content->footer_blocks ?? [];
     }
 
+    private function getDescription(): string
+    {
+        return $this->content->description ?? $this->website->description;
+    }
+
+    private function getKeywords(): array
+    {
+        return $this->content->keywords;
+    }
+
+    private function getLanguage(): string
+    {
+        return $this->content->seo_profile && $this->content->seo_profile->overwrite_locale
+            ? $this->content->seo_profile->locale
+            : $this->website->seo_profile->locale ?? 'Es';
+    }
+
+    private function getCanonicalUrl(): ?string
+    {
+        return $this->content->canonical_url ?? null;
+    }
+
+    private function getHreflangs(): array
+    {
+        return [];
+    }
 
     private function getFavicon(): array
     {
         return [];
+    }
+
+    private function getThemeColor(): string
+    {
+        return $this->website->theme_color;
     }
 
     private function getManifest(): array
@@ -131,12 +159,6 @@ class SiteContext
     {
         return [];
     }
-
-    private function getHreflangs(): array
-    {
-        return [];
-    }
-
     private function getLdJson(): array
     {
         return [];
@@ -210,5 +232,36 @@ class SiteContext
         return true;
     }
     */
+
+
+    function robotsDirectives(WebsiteSite $site, ?WebsiteContent $content): string {
+        // suspended => bloqueo total
+        if ($site->robots_mode === 'suspended') return 'noindex,nofollow';
+
+        if ($site->robots_mode === 'site') {
+            return ($site->site_noindex ? 'noindex' : 'index') . ',' .
+                   ($site->site_nofollow ? 'nofollow' : 'follow');
+        }
+
+        // 'content' (por defecto): cae al contenido si existe, si no al site
+        $noindex  = $content?->noindex ?? $site->site_noindex;
+        $nofollow = $content?->nofollow ?? $site->site_nofollow;
+
+        return ($noindex ? 'noindex' : 'index') . ',' . ($nofollow ? 'nofollow' : 'follow');
+    }
+
+    function resolveRobots(WebsiteSite $site, ?WebsiteContent $content): string {
+        if ($site->robots_mode === 'suspended') {
+          return 'noindex, nofollow';
+        }
+        if ($site->robots_mode === 'site') {
+          return ($site->site_noindex ? 'noindex' : 'index')
+               . ', ' . ($site->site_nofollow ? 'nofollow' : 'follow');
+        }
+        // mode === 'content'
+        $index  = $content?->noindex  ?? false;
+        $follow = $content?->nofollow ?? false;
+        return ($index ? 'noindex' : 'index') . ', ' . ($follow ? 'nofollow' : 'follow');
+    }
 
 }

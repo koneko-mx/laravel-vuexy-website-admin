@@ -9,14 +9,11 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 use Illuminate\Support\Facades\{Auth, URL};
 use Koneko\VuexyAdmin\Support\Traits\Audit\{HasCreator, HasUpdater};
 use Koneko\VuexyAdmin\Support\Traits\Model\HasVuexyModelMetadata;
-use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteContentType;
-use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
-use OwenIt\Auditing\Auditable;
+use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteContents\WebsiteContentStatus;
 
-class WebsiteContent extends Model implements AuditableContract
+class WebsiteContent extends Model
 {
     use HasVuexyModelMetadata;
-    use Auditable;
     use HasCreator,
         HasUpdater;
 
@@ -30,82 +27,32 @@ class WebsiteContent extends Model implements AuditableContract
     // ===================== CONFIGURACIÓN =====================
 
     protected $fillable = [
-        'site_id',
-        'type',
-        'keywords',
+        'site_id','title','slug','description','keywords',
+        'overwrite_author','author','overwrite_copyright','copyright',
+        'canonical_url','noindex','nofollow',
+        'package','layout','theme_color',
+        'header_blocks','content_blocks','footer_blocks',
+        'roles','permissions','hide_if_authenticated','hide_if_guest',
+        'visible_from','visible_until',
+        'status','enable_cache','cache_ttl',
+        'created_by','updated_by'
+      ];
 
-        'title',
-        'slug',
-
-        'description',
-        'author',
-        'copyright',
-        'canonical_url',
-        'favicon_ns',
-        'seo_profile_id',
-        'template_id',
-
-        'header_blocks',
-        'content_blocks',
-        'footer_blocks',
-
-        'noindex',
-        'nofollow',
-
-        'schema_org',
-
-        'locale',
-        'geo_location',
-
-        'og_type',
-        'og_title',
-        'og_description',
-        'og_image',
-        'og_url',
-        'og_site_name',
-
-        'twitter_card',
-        'twitter_title',
-        'twitter_description',
-        'twitter_image',
-        'twitter_site',
-        'twitter_creator',
-
-        'json_ld',
-
-        'is_draft',
-        'is_sensitive',
-        'is_partial',
-        'roles',
-        'permissions',
-        'hide_if_authenticated',
-        'hide_if_guest',
-        'visible_from',
-        'visible_until',
-        'enable_cache',
-        'cache_ttl',
-        'created_by',
-        'updated_by'
-    ];
-
-    protected $casts = [
-        'type'           => WebsiteContentType::class,
+      protected $casts = [
         'keywords'       => 'array',
         'header_blocks'  => 'array',
         'content_blocks' => 'array',
         'footer_blocks'  => 'array',
-        'is_draft'       => 'boolean',
-        'is_sensitive'   => 'boolean',
-        'is_partial'     => 'boolean',
         'roles'          => 'array',
         'permissions'    => 'array',
         'hide_if_authenticated' => 'boolean',
         'hide_if_guest'  => 'boolean',
-        'visible_from'   => 'timestamp',
-        'visible_until'  => 'timestamp',
+        'visible_from'   => 'datetime',
+        'visible_until'  => 'datetime',
+        'status'         => WebsiteContentStatus::class,
         'enable_cache'   => 'boolean',
         'cache_ttl'      => 'integer',
-    ];
+      ];
 
     protected $auditInclude = [
     ];
@@ -117,20 +64,14 @@ class WebsiteContent extends Model implements AuditableContract
         return $this->belongsTo(WebsiteSite::class);
     }
 
-    public function template(): BelongsTo
-    {
-        return $this->belongsTo(WebsiteTemplate::class);
-    }
-
-    public function seoProfile(): BelongsTo
-    {
-        return $this->belongsTo(WebsiteSeoProfile::class);
-    }
-
     public function versions() : HasMany
     {
         return $this->hasMany(WebsiteContentVersion::class);
     }
+
+    public function seoProfile() { return $this->morphOne(WebsiteSeoProfile::class, 'seoable'); }
+
+
 
     // ===================== GETTERS =====================
 
@@ -147,37 +88,23 @@ class WebsiteContent extends Model implements AuditableContract
     }
 
 
-    public function getEffectiveSeoMetadata(): array
-    {
-        $base = $this->seoProfile?->getMetaTags() ?? [];
-
-        return array_merge($base, $this->seo_overrides ?? []);
-    }
-
-    public function getCanonicalUrl(): ?string
-    {
-        return $this->canonical_url ?: ($this->seoProfile->og_url ?? null);
-    }
-
+    /*
     public function toHtml(): string
     {
         return view('website::templates.' . ($this->template ?? 'default'), [
             'content' => $this,
         ])->render();
     }
+    */
 
     // ===================== SCOPES =====================
 
-    public function scopePublished($query) : Builder
-    {
+    // Scopes coherentes con enum
+    public function scopePublished($query): Builder {
         return $query
-            ->where('is_draft', false)
-            ->where(function ($q) {
-                $q->whereNull('visible_from')->orWhere('visible_from', '<=', now());
-            })
-            ->where(function ($q) {
-                $q->whereNull('visible_until')->orWhere('visible_until', '>=', now());
-            });
+        ->where('status', WebsiteContentStatus::Published->value)
+        ->where(fn($q)=>$q->whereNull('visible_from')->orWhere('visible_from','<=',now()))
+        ->where(fn($q)=>$q->whereNull('visible_until')->orWhere('visible_until','>=',now()));
     }
 
     public function scopeBySlug($query, string $slug) : Builder
@@ -185,9 +112,8 @@ class WebsiteContent extends Model implements AuditableContract
         return $query->where('slug', $slug);
     }
 
-    public function scopeDraft($query) : Builder
-    {
-        return $query->where('is_draft', true);
+    public function scopeDraft($q): Builder {
+        return $q->where('status', WebsiteContentStatus::Draft->value);
     }
 
 

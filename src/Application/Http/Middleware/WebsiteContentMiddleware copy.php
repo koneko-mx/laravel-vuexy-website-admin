@@ -25,7 +25,7 @@ class WebsiteContentMiddlewareCopy
             ->firstOrFail();
 
         // 🛑 Bloqueo por estado
-        if ($content->is_draft && !Auth::check()) {
+        if ($content->status == "draft" && !Auth::check()) {
             abort(403, 'Contenido no publicado.');
         }
 

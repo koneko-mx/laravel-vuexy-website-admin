@@ -23,7 +23,7 @@
         <div>
             {{-- Botones --}}
             <div class="row my-4">
-                <div class="col-lg-12 text-end">
+                <div class="col-12 text-end mb-4">
                     <button
                     type="submit"
                         class="btn btn-primary btn-save btn-sm mt-2 mr-2 waves-effect waves-light"

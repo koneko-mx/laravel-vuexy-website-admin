@@ -41,7 +41,7 @@
 
         {{-- Botones de acción --}}
         <div class="row">
-            <div class="col-lg-12 text-end">
+            <div class="col-12 text-end mb-4">
                 <x-vuexy-admin::button.basic
                     type="submit"
                     variant="primary"
@@ -65,6 +65,6 @@
         </div>
 
         {{-- Contenedor para notificaciones --}}
-        <div class="notification-container pt-4" wire:ignore></div>
+        <div class="notification-container mb-4" wire:ignore></div>
     </x-vuexy-admin::form.form>
 </div>

@@ -4,7 +4,8 @@ namespace Koneko\VuexyWebsiteAdmin\Database\Seeders;
 
 use Koneko\VuexyAdmin\Support\Seeders\Base\AbstractDataSeeder;
 use Koneko\VuexyAdmin\Support\Traits\Seeders\HandlesFileSeeders;
-use Koneko\VuexyWebsiteAdmin\Models\WebsiteSeoProfile;
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite};
+use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteSeoProfile\WebsiteSeoProfileScope;
 
 class WebsiteSeoProfileSeeder extends AbstractDataSeeder
 {
@@ -12,23 +13,18 @@ class WebsiteSeoProfileSeeder extends AbstractDataSeeder
 
     // Datos del Modelo
     protected string $model          = WebsiteSeoProfile::class;
-    protected string|array $uniqueBy = 'slug';
-
-    // Ruta del archivo de datos
-    //protected string $targetFile = 'website_seo_profiles.json';
+    protected string|array $uniqueBy = 'id';
 
     protected function sanitizeRow(array $row): array
     {
-        return array_merge($row, [
-            'created_by' => $this->resolveSeederUserId(),
-        ]);
-    }
+        $website = WebsiteSite::where('domain', $row['site_domain'])->first();
 
-    /**
-     * Opcional: usuario dummy o admin por defecto
-     */
-    protected function resolveSeederUserId(): int|null
-    {
-        return config('seeder.default_user_id', null); // Usa config si está definido
+        if ($website) {
+            $row['seoable_type'] = WebsiteSite::class;
+            $row['seoable_id']   = $website->id;
+            $row['scope']        = WebsiteSeoProfileScope::Site->value;
+        }
+
+        return $row;
     }
 }

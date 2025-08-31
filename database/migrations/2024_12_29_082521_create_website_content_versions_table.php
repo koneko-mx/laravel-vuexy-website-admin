@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('website_content_versions', function (Blueprint $table) {
             $table->mediumIncrements('id');
 
-            $table->unsignedSmallInteger('website_content_id')->index();
+            $table->unsignedMediumInteger('website_content_blocks_id')->index();
             $table->string('version_label', 64)->index();
             $table->longText('content');
             $table->boolean('is_current')->default(false);
@@ -27,11 +27,11 @@ return new class extends Migration
             $table->timestamps();
 
             // Indices
-            $table->index(['website_content_id', 'version_label']);
-            $table->index(['website_content_id', 'is_current']);
+            $table->index(['website_content_blocks_id', 'version_label'], 'website_content_versions_blocks_id_version_label_index');
+            $table->index(['website_content_blocks_id', 'is_current'], 'website_content_versions_blocks_id_is_current_index');
 
             // Relaciones
-            $table->foreign('website_content_id')->references('id')->on('website_contents')->cascadeOnDelete();
+            $table->foreign('website_content_blocks_id')->references('id')->on('website_content_blocks')->cascadeOnDelete();
             $table->foreign('created_by')->references('id')->on('users')->restrictOnDelete();
             $table->foreign('updated_by')->references('id')->on('users')->restrictOnDelete();
         });

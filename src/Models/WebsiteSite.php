@@ -9,14 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Koneko\VuexyAdmin\Support\Traits\Audit\{HasCreator,HasUpdater};
 use Koneko\VuexyAdmin\Support\Traits\Model\HasVuexyModelMetadata;
-use Koneko\VuexyWebsiteAdmin\Website\Enums\WebsiteSiteStatus;
-use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
-use OwenIt\Auditing\Auditable;
+use Koneko\VuexyWebsiteAdmin\Application\Enums\Websites\WebsiteRobotsMode;
+use Koneko\VuexyWebsiteAdmin\Application\Enums\Websites\WebsiteSiteStatus;
 
-class WebsiteSite extends Model implements AuditableContract
+class WebsiteSite extends Model
 {
     use HasVuexyModelMetadata;
-    use Auditable;
     use HasCreator,
         HasUpdater;
 
@@ -30,58 +28,61 @@ class WebsiteSite extends Model implements AuditableContract
     // ===================== CONFIGURACIÓN =====================
 
     protected $fillable = [
-        'domain',
-        'keywords',
-        'title',
-        'description',
-        'author',
-        'copyright',
-        'noindex',
-        'nofollow',
-        'allow_overwrite_robots',
-        'force_https',
-        'www_alias',
-        'template_id',
-        'config',
-        'status',
-        'created_by',
-        'updated_by'
+        'domain','title',
+        'robots_mode','site_noindex','site_nofollow',
+        'www_redirect','force_https',
+        'author','brand_name','copyright','slogan',
+        'package','layout','theme_color',
+        'status','coming_soon_content_id','maintenance_content_id',
+        'created_by','updated_by'
     ];
 
     protected $casts = [
-        'status' => WebsiteSiteStatus::class,
-        'keywords' => 'array',
-        'noindex' => 'boolean',
-        'nofollow' => 'boolean',
-        'allow_overwrite_robots' => 'boolean',
-        'force_https' => 'boolean',
-        'config' => 'array',
-    ];
-
-    protected $auditInclude = [
+        'robots_mode'    => WebsiteRobotsMode::class,
+        'www_redirect'   => 'boolean',
+        'force_https'    => 'boolean',
+        'site_noindex'   => 'boolean',
+        'site_nofollow'  => 'boolean',
+        'status'         => WebsiteSiteStatus::class,
     ];
 
     // ===================== RELACIONES =====================
 
     public function menus(): HasMany
     {
-        return $this->hasMany(WebsiteMenu::class);
+        return $this->hasMany(WebsiteMenu::class, 'site_id');
     }
 
     public function contents(): HasMany
     {
-        return $this->hasMany(WebsiteContent::class);
+        return $this->hasMany(WebsiteContent::class, 'site_id');
+    }
+    public function comingSoon(): BelongsTo {
+        return $this->belongsTo(WebsiteContent::class, 'coming_soon_content_id');
     }
 
-    public function template(): BelongsTo
-    {
-        return $this->belongsTo(WebsiteTemplate::class);
+    public function maintenance(): BelongsTo {
+        return $this->belongsTo(WebsiteContent::class, 'maintenance_content_id');
     }
+
+    public function seoProfile() { return $this->morphOne(WebsiteSeoProfile::class, 'seoable'); }
+
 
     // ===================== GETTERS =====================
 
     public function getDisplayName(): string
     {
-        return $this->domain;
+        return (string) $this->domain;
+    }
+
+    /**
+     * Get the full URL for the site's domain with the correct protocol
+     *
+     * @return string
+     */
+    public function getFullDomainUrl(): string
+    {
+        $protocol = $this->force_https ? 'https' : (request()->secure() ? 'https' : 'http');
+        return "{$protocol}://{$this->domain}";
     }
 }

@@ -24,7 +24,7 @@ class WebsiteContentVersion extends Model
     // ===================== CONFIGURACIÓN =====================
 
     protected $fillable = [
-        'website_content_id',
+        'website_content_blocks_id',
         'version_label',
         'content',
         'is_current',
@@ -39,9 +39,9 @@ class WebsiteContentVersion extends Model
 
     // ===================== RELACIONES =====================
 
-    public function content(): BelongsTo
+    public function block(): BelongsTo
     {
-        return $this->belongsTo(WebsiteContent::class, 'website_content_id');
+        return $this->belongsTo(WebsiteContentBlock::class, 'website_content_blocks_id');
     }
 
 

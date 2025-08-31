@@ -2,7 +2,19 @@
 
 declare(strict_types=1);
 
-use Koneko\VuexyWebsiteAdmin\Application\Http\Middleware\{WebsiteContentMiddleware, WebsiteContextMiddleware, WebsiteTemplateMiddleware};
+use Koneko\VuexyWebsiteAdmin\Application\Http\Middleware\WebsiteContentMiddleware;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Brand\{BrandCard, LogoOnDarkBgCard, LogoOnLightBgCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Chat\{ChatCard, WhatsappCard, TawkToCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Contact\{ContactInfoCard, ContactFormCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\General\{DescriptionCard, VisibilitySecurityCard, FaviconCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Integrations\{GoogleAnalyticsCard, GoogleSearchConsoleCard, GoogleTagsCard, PixelMetaCard, TwitterApiCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Locations\BranchesCard;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Locations\LocationCard;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Manager\SiteOffCanvasForm;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo\{LocalLocationCard, OgCard, SchemaOrgCard, TwitterCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Social\SocialCard;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Template\{TemplateCard};
+/*
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Analytics\GoogleAnalytics\GoogleAnalyticsCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Analytics\GoogleSearchConsole\GoogleSearchConsoleCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Analytics\GoogleTags\GoogleTagsCard;
@@ -13,7 +25,7 @@ use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Blog\Comment\{BlogCommentsT
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Blog\Tag\{BlogTagsTable, BlogTagOffcanvasForm};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Content\Faq\{FaqIndex, FaqOffcanvasForm};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Contact\Form\ContactFormCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Contact\Info\{ContactInfoCard, ContactLocationCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Contact\Info\{ContactInfoCard, LocationCard};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Content\Gallery\GalleryIndex;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Content\Legal\{LegalIndex, LegalOffCanvasForm};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Comunication\Messenger\MessengerCard;
@@ -22,15 +34,17 @@ use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Comunication\Twitter\Twitte
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Comunication\Whatsapp\WhatsappCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Canonical\CanonicalIndex;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Jsonld\JsonldIndex;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\LocalLocationCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Manifest\ManifestCard;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\OgCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Sitemap\{SitemapIndex, SitemapUrlOffcanvasForm};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\SocialCards\SocialCardsIndex;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Robots\RobotsCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Settings\General\{WebsiteDescriptionCard, WebsiteFaviconCard, LogoOnDarkBgCard, LogoOnLightBgCard};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Settings\Indexing\IndexingCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Settings\Social\SocialCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Translate\Google\GoogleTanslateCard;
+*/
+
 use Koneko\VuexyWebsiteAdmin\Console\Commands\{SitemapGenerate, WebsiteCacheHelperCommand, WebsiteContentHelperCommand, WebsiteMenuHelperCommand, WebsiteSeoHelperCommand};
+use Koneko\VuexyWebsiteAdmin\Models\WebsiteSite;
 
 return [
     // 🌐 Identidad del Módulo
@@ -64,7 +78,6 @@ return [
     ],
 
     // 🗺️ Rutas
-
     'routes' => [
         [
             'middleware' => ['web', 'auth', 'admin'],
@@ -90,59 +103,90 @@ return [
     // 🧩 Componentes Blade y Livewire
     'livewire' => [
         'vuexy-website-admin' => [
-            // ajustes generales
-            'website-description-card' => WebsiteDescriptionCard::class,
-            'website-favicon-card'     => WebsiteFaviconCard::class,
-            'logo-on-light-bg-card'    => LogoOnLightBgCard::class,
-            'logo-on-dark-bg-card'     => LogoOnDarkBgCard::class,
+            // Sitios web
+            'site.site-offcanvas-form' => SiteOffCanvasForm::class,
 
-            // Enlaces Redes sociales
-            'social-card' => SocialCard::class,
+            // General
+            'site.description-card'         => DescriptionCard::class,
+            'site.visibility-security-card' => VisibilitySecurityCard::class,
+            'site.favicon-card'             => FaviconCard::class,
+
+            // Template
+            'site.template-card' => TemplateCard::class,
+
+            // Marca
+            'site.brand-card'            => BrandCard::class,
+            'site.logo-on-light-bg-card' => LogoOnLightBgCard::class,
+            'site.logo-on-dark-bg-card'  => LogoOnDarkBgCard::class,
+
+            // SEO
+            'site.local-location-card' => LocalLocationCard::class,
+            'site.schema-org-card'     => SchemaOrgCard::class,
+            'site.og-card'             => OgCard::class,
+            'site.twitter-card'        => TwitterCard::class,
+
+            // Contacto
+            'site.contact-info-card' => ContactInfoCard::class,
+            'site.contact-form-card' => ContactFormCard::class,
+
+            // Ubicaciones
+            'site.contact-location-card' => LocationCard::class,
+            'site.contact-branches-card' => BranchesCard::class,
+
+            // Redes sociales
+            'site.social-card' => SocialCard::class,
+
+            // Chat
+            'site.chat-card' => ChatCard::class,
+            'site.whatsapp-card' => WhatsappCard::class,
+            'site.tawk-to-card'  => TawkToCard::class,
+
+            // Integraciones
+            'site.google-analytics-card'      => GoogleAnalyticsCard::class,
+            'site.google-tags-card'           => GoogleTagsCard::class,
+            'site.google-search-console-card' => GoogleSearchConsoleCard::class,
+            'site.pixel-meta-card'            => PixelMetaCard::class,
+            'site.twitter-api-card'           => TwitterApiCard::class,
+
+            // Menús
+            'site.menu-card' => MenuCard::class,
+
+            // Páginas
+            'site.page-card' => PageCard::class,
+
+
+
+
+
+
 
             // Visibilidad en buscadores
-            'indexing-card' => IndexingCard::class,
 
-            // Información de contacto
-            'contact-info-card'     => ContactInfoCard::class,
-            'contact-location-card' => ContactLocationCard::class,
 
             // Formulario de contacto
-            'contact-form-card' => ContactFormCard::class,
 
             // Analítica y seguimiento
-            'google-analytics-card'      => GoogleAnalyticsCard::class,
-            'google-tags-card'           => GoogleTagsCard::class,
-            'google-search-console-card' => GoogleSearchConsoleCard::class,
-            'pixel-meta-card'            => PixelMetaCard::class,
 
             // Chat & Comunicación
-            'messenger-card' => MessengerCard::class,
-            'whatsapp-card'  => WhatsappCard::class,
-            'tawk-to-card'   => TawkToCard::class,
-            'twitter-card'   => TwitterCard::class,
+            'site.messenger-card' => MessengerCard::class,
 
             // Traducciones e internacional
-            'google-tanslate-card' => GoogleTanslateCard::class,
 
             // Preguntas frecuentes
-            'faq-index'          => FaqIndex::class,
-            'faq-offcanvas-form' => FaqOffcanvasForm::class,
+            'site.faq-index'          => FaqIndex::class,
+            'site.faq-offcanvas-form' => FaqOffcanvasForm::class,
 
             // Galería de imágenes
-            'gallery-index' => GalleryIndex::class,
+            'site.gallery-index' => GalleryIndex::class,
 
             // Avisos legales
-            'legal-index'          => LegalIndex::class,
-            'legal-offcanvas-form' => LegalOffCanvasForm::class,
+            'site.legal-index'          => LegalIndex::class,
+            'site.legal-offcanvas-form' => LegalOffCanvasForm::class,
 
             // Herramientas SEO
-            'sitemap-index'          => SitemapIndex::class,
-            'sitemap-offcanvas-form' => SitemapUrlOffcanvasForm::class,
-            'jsonld-index'           => JsonldIndex::class,
-            'robots-card'            => RobotsCard::class,
-            'manifest-card'          => ManifestCard::class,
-            'canonical-index'        => CanonicalIndex::class,
-            'social-cards-index'     => SocialCardsIndex::class,
+            'site.sitemap-index'          => SitemapIndex::class,
+            'site.sitemap-offcanvas-form' => SitemapUrlOffcanvasForm::class,
+            'site.canonical-index'        => CanonicalIndex::class,
 
             // Blog
             'blog-articles-table'          => BlogArticlesTable::class,
@@ -165,6 +209,11 @@ return [
         WebsiteSeoHelperCommand::class,
     ],
 
+    // 📦 Scope Models
+    'scopeModels' => [
+        'website' => WebsiteSite::class,
+    ],
+
     // 🛡️ Configuración de roles y permisos (RBAC)
     'rbac' => [
         'permissions_path' => 'database/rbac/permissions.json',
@@ -179,7 +228,7 @@ return [
     // 🧠 Extensiones
     'extensions' => [
         'menu' => [
-            'path' => 'config/vuexy_website_admin_menu.php',
+            'path' => 'config/vuexy_admin_menu.php',
         ],
     ],
 ];

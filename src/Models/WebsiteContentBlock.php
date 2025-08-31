@@ -11,13 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Koneko\VuexyAdmin\Support\Traits\Audit\{HasCreator, HasUpdater};
 use Koneko\VuexyAdmin\Support\Traits\Model\HasVuexyModelMetadata;
-use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
-use OwenIt\Auditing\Auditable;
 
-class WebsiteContentBlock extends Model implements AuditableContract
+class WebsiteContentBlock extends Model
 {
     use HasVuexyModelMetadata;
-    use Auditable;
     use HasCreator,
         HasUpdater;
 
@@ -33,6 +30,7 @@ class WebsiteContentBlock extends Model implements AuditableContract
     protected $fillable = [
         'slug',
         'description',
+        'keywords',
         'data',
         'settings',
         'enable_cache',
@@ -42,16 +40,8 @@ class WebsiteContentBlock extends Model implements AuditableContract
     protected $casts = [
         'data'         => 'array',
         'settings'     => 'array',
+        'keywords'       => 'array',
         'enable_cache' => 'boolean',
-    ];
-
-    protected $auditInclude = [
-        'slug',
-        'description',
-        'data',
-        'settings',
-        'enable_cache',
-        'cache_ttl',
     ];
 
     public function versions() : HasMany

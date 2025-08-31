@@ -9,8 +9,16 @@ use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\ContentController;
 use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\SeoController;
 use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\SettingsController;
 use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\TranstaleController;
+use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\WebsitesController;
 
-RouteScope::auto(__FILE__, 'web-y-seo', function (RouteScope $r) {
+RouteScope::auto(__FILE__, 'website-admin', function (RouteScope $r) {
+    // Web & SEO / Configuración general
+    $r->route('sitios-web', 'websites.manager.', WebsitesController::class, function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{site}/{tab}', 'site')->name('site');
+    });
+
+    /*
     // Web & SEO / Configuración general
     $r->route('configuracion-general', 'settings.', SettingsController::class, function () {
         Route::get('ajustes-generales', 'generalIndex')->name('general.index');
@@ -61,4 +69,5 @@ RouteScope::auto(__FILE__, 'web-y-seo', function (RouteScope $r) {
         Route::get('cannonical-urls', 'canonicalIndex')->name('canonical.index');
         Route::get('preview-social-cards', 'socialCardsIndex')->name('social-cards.index');
     });
+    */
 });

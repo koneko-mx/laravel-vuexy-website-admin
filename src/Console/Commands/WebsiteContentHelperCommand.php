@@ -96,11 +96,11 @@ class WebsiteContentHelperCommand extends Command
 
         if ($this->option('summary')) {
             $this->info("📚 Resumen de contenidos:");
-            $all = WebsiteContent::select('id', 'slug', 'title', 'template', 'type', 'is_draft')
+            $all = WebsiteContent::select('id', 'slug', 'title', 'template', 'type', 'status')
                 ->orderBy('id', 'asc')->get();
 
             foreach ($all as $c) {
-                $flag = $c->is_draft ? '📝' : '✅';
+                $flag = $c->status == "draft" ? '📝' : '✅';
                 $this->line("[{$c->id}] {$flag} {$c->slug} — {$c->title} ({$c->template})");
             }
         }

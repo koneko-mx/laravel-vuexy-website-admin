@@ -293,27 +293,32 @@ return [
             ],
         ]
     ],
-    'Blog' => [
+    'Publicaciones' => [
         '_meta' => [
             'icon' => 'ti ti-news',
             'description' => 'Publica, edita y organiza artículos, categorías y comentarios de tu blog.',
             'after_to' => 'Web & SEO',
         ],
         'submenu' => [
-            'Categorias' => [
+            'Apartados' => [
                 'icon' => 'ti ti-category',
                 'route' => 'admin.website-admin.blog.categories.index',
                 'can' => 'admin.website-admin.blog.categories.view',
+            ],
+            'Categorias' => [
+                'icon' => 'ti ti-list',
+                'route' => 'admin.website-admin.blog.categories.index',
+                'can' => 'admin.website-admin.blog.categories.view',
+            ],
+            'Publicaciones' => [
+                'icon' => 'ti ti-news',
+                'route' => 'admin.website-admin.blog.articles.index',
+                'can' => 'admin.website-admin.blog.articles.view',
             ],
             'Etiquetas' => [
                 'icon' => 'ti ti-tags',
                 'route' => 'admin.website-admin.blog.tags.index',
                 'can' => 'admin.website-admin.blog.tags.view',
-            ],
-            'Articulos' => [
-                'icon' => 'ti ti-news',
-                'route' => 'admin.website-admin.blog.articles.index',
-                'can' => 'admin.website-admin.blog.articles.view',
             ],
             'Comentarios' => [
                 'icon' => 'ti ti-message',
@@ -322,6 +327,7 @@ return [
             ],
         ]
     ],
+
     'Plantillas' => [
         '_meta' => [
             'icon' => 'ti ti-template',

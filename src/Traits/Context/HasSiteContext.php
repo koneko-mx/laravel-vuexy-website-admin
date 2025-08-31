@@ -43,7 +43,7 @@ trait HasSiteContext
     public function applySiteScopeToSettings(): static
     {
         if ($site = $this->getSite()) {
-            settings()->setScope('site', $site->id);
+            settings()->scope('site', $site->id);
         }
 
         return $this;
@@ -52,7 +52,7 @@ trait HasSiteContext
     public function applySiteScopeToCache(): static
     {
         if ($site = $this->getSite()) {
-            cache_m()->setScope('site', $site->id);
+            cache_m()->scope('site', $site->id);
         }
 
         return $this;

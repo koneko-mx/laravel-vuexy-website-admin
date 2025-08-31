@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('website_content_blocks', function (Blueprint $table) {
-            $table->smallIncrements('id');
+            $table->mediumIncrements('id');
 
             $table->string('slug', 64)->nullable();
             $table->string('description')->nullable();
+            $table->json('keywords')->nullable();
 
             $table->json('data')->nullable();
             $table->json('settings')->nullable();
