@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo;
 
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite, WebsiteContent};
 use Livewire\Attributes\Rule;
 use Livewire\Component;
-use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteSeoProfile\WebsiteSeoProfileScope;
-use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite, WebsiteContent};
 
 final class SchemaOrgCard extends Component
 {
-    /**
-     * Parámetros de entrada para reutilizar la tarjeta en Site y Content.
-     *  - seoableType: 'site' | 'content'
-     *  - seoableId:   ID del dueño
-     */
     public string $seoableType; // 'site' | 'content'
     public int    $seoableId;
     public bool   $isSite = false;
+
     public ?WebsiteSeoProfile $profile = null;
 
     // Modo
@@ -45,12 +40,12 @@ final class SchemaOrgCard extends Component
     private function buildPublicUrl(): ?string
     {
         if ($this->isSite) {
-            $site = \Koneko\VuexyWebsiteAdmin\Models\WebsiteSite::find($this->seoableId);
+            $site = WebsiteSite::find($this->seoableId);
             return $site?->getFullDomainUrl(); // https://dominio
         }
 
         // Content: https://dominio/slug
-        $content = \Koneko\VuexyWebsiteAdmin\Models\WebsiteContent::with('site')->find($this->seoableId);
+        $content = WebsiteContent::with('site')->find($this->seoableId);
         if (!$content || !$content->site) return null;
         return rtrim($content->site->getFullDomainUrl(), '/') . '/' . ltrim($content->slug, '/');
     }
@@ -59,29 +54,27 @@ final class SchemaOrgCard extends Component
     {
         $this->seoableType = $seoableType;
         $this->seoableId   = $seoableId;
+        $this->isSite      = $seoableType === 'site';
 
-        $owner = match ($seoableType) {
-            'site'    => WebsiteSite::query()->findOrFail($seoableId),
-            'content' => WebsiteContent::query()->findOrFail($seoableId),
-            default   => throw new \InvalidArgumentException('seoableType inválido'),
-        };
+        $owner = $this->isSite
+            ? WebsiteSite::query()->findOrFail($seoableId)
+            : WebsiteContent::query()->findOrFail($seoableId);
+
+        $scope = $this->isSite ? 'site' : 'content';
+        $this->profile = $owner->seoProfile()->firstOrCreate([], [ 'scope' => $scope ]);
 
         if ($url = $this->buildPublicUrl()) {
             $this->richResultsUrl = 'https://search.google.com/test/rich-results?url=' . urlencode($url);
         }
 
-        $this->isSite = $seoableType === 'site';
-        $scope = $this->isSite ? WebsiteSeoProfileScope::Site->value : WebsiteSeoProfileScope::Content->value;
-
-        $this->profile = $owner->seoProfile()->firstOrCreate([], [ 'scope' => $scope ]);
         $this->loadForm();
     }
 
     public function loadForm(): void
     {
-        $p = $this->profile;
-        $this->overwrite_schema = (bool) $p->overwrite_schema;
-        $this->schema_org       = $p->schema_org;
+        $this->schema_mode = $this->profile->schema_mode->value;
+
+        $this->schema_org      = $this->profile->schema_org;
         $this->schema_org_text = $this->schema_org
             ? json_encode($this->schema_org, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
             : '';
@@ -126,8 +119,8 @@ final class SchemaOrgCard extends Component
         }
 
         $this->profile->fill([
-            'overwrite_schema' => $this->overwrite_schema,
-            'schema_org'       => $data,
+            'schema_mode' => $this->schema_mode,
+            'schema_org'  => $data,
         ])->save();
 
         $this->dispatch('notification', target: $this->targetNotify, type: 'success', message: 'Schema.org guardado correctamente.');

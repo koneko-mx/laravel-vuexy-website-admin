@@ -1,51 +1,45 @@
 @props([
-  'isSite' => false,   // true => Website, false => Content
-  'model',             // string: nombre Livewire, ej: "og_mode"
-  'group' => null,     // para IDs únicos, ej: "og", "tw", "schema"
+  'isSite' => false,
+  'model',              // p.ej. "schema_mode"
+  'group' => 'schema',  // para IDs únicos y dataset
+  'value' => null,      // valor actual: pásalo desde el padre
+  'btnClass' => 'btn btn-outline-secondary',
   'size' => 'sm',
-  'enableLabel'   => 'Habilitar',
+  'enableLabel' => 'Habilitar',
   'overrideLabel' => 'Sobrescribir',
-  'inheritLabel'  => 'Heredar',
-  'disableLabel'  => 'Deshabilitar',
-  'btnClass'      => 'btn btn-outline-secondary',
+  'inheritLabel' => 'Heredar',
+  'disableLabel' => 'Deshabilitar',
 ])
 
 @php
-  $uid = $group ? 'mode-'.$group : ('mode-'.uniqid());
+  $uid = 'mode-'.$group;
+  $name = $uid.'-name';
+  $val = $value ?? ($isSite ? 'override' : 'inherit');
   $sizeClass = $size ? "btn-group-{$size}" : '';
 @endphp
 
-{{-- 1) Hidden con wire:model.defer (NO dispara AJAX hasta guardar) --}}
-<input type="hidden" x-ref="hiddenMode" wire:model.defer="{{ $model }}">
-
-{{-- 2) Radios “puros” controlados por Alpine, ignorados por Livewire --}}
-<div {{ $attributes->merge(['class' => "btn-group {$sizeClass}", 'role' => 'group', 'aria-label' => 'Modo']) }}
-     wire:ignore
-     x-data="modeToggle({ model: @js($model), isSite: @js($isSite) })"
-     x-init="init()">
-
+{{-- Radios SIN wire:model; los controla JS + delegación (wire:ignore opcional) --}}
+<div id="{{ $uid }}-group"
+     class="btn-group {{ $sizeClass }}"
+     role="group" aria-label="Modo"
+     data-hidden="#{{ $uid }}-hidden"
+     {{-- opcional: el padre puede setear estos datasets para auto-toggle de UI --}}
+     {{ $attributes }}
+>
   @if($isSite)
-    {{-- Website: Habilitar(override) / Deshabilitar --}}
-    <input type="radio" class="btn-check" id="{{ $uid }}-enable"  name="{{ $uid }}" value="override"
-           @click="select('override')" :checked="value==='override'">
+    <input class="btn-check" wire:model="{{ $model }}" type="radio" id="{{ $uid }}-enable"  name="{{ $name }}" value="override" {{ $val === 'override' ?'checked' :'' }}>
     <label class="{{ $btnClass }}" for="{{ $uid }}-enable">{{ $enableLabel }}</label>
 
-    <input type="radio" class="btn-check" id="{{ $uid }}-disable" name="{{ $uid }}" value="disable"
-           @click="select('disable')"  :checked="value==='disable'">
+    <input class="btn-check" wire:model="{{ $model }}" type="radio" id="{{ $uid }}-disable" name="{{ $name }}" value="disable"  {{ $val === 'disable' ?'checked' :'' }}>
     <label class="{{ $btnClass }}" for="{{ $uid }}-disable">{{ $disableLabel }}</label>
   @else
-    {{-- Content: Heredar / Sobrescribir / Deshabilitar --}}
-    <input type="radio" class="btn-check" id="{{ $uid }}-inherit" name="{{ $uid }}" value="inherit"
-           @click="select('inherit')"  :checked="value==='inherit'">
+    <input class="btn-check" wire:model="{{ $model }}" type="radio" id="{{ $uid }}-inherit"  name="{{ $name }}" value="inherit"  {{ $val === 'inherit' ?'checked' :'' }}>
     <label class="{{ $btnClass }}" for="{{ $uid }}-inherit">{{ $inheritLabel }}</label>
 
-    <input type="radio" class="btn-check" id="{{ $uid }}-override" name="{{ $uid }}" value="override"
-           @click="select('override')" :checked="value==='override'">
+    <input class="btn-check" wire:model="{{ $model }}" type="radio" id="{{ $uid }}-override" name="{{ $name }}" value="override" {{ $val === 'override' ?'checked' :'' }}>
     <label class="{{ $btnClass }}" for="{{ $uid }}-override">{{ $overrideLabel }}</label>
 
-    <input type="radio" class="btn-check" id="{{ $uid }}-disable"  name="{{ $uid }}" value="disable"
-           @click="select('disable')"  :checked="value==='disable'">
+    <input class="btn-check" wire:model="{{ $model }}" type="radio" id="{{ $uid }}-disable"  name="{{ $name }}" value="disable"  {{ $val === 'disable' ?'checked' :'' }}>
     <label class="{{ $btnClass }}" for="{{ $uid }}-disable">{{ $disableLabel }}</label>
   @endif
 </div>
-

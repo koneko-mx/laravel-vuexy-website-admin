@@ -1,7 +1,3 @@
-//import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
-//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
-
 // Inicializar formularios de ajustes de análisis de datos
 window.AnalyticsSettingsForm = new FormCustomListener({
     formSelector: '#website-analytics-settings-card',
@@ -34,8 +30,4 @@ window.AnalyticsSettingsForm = new FormCustomListener({
             autoFocus: new FormValidation.plugins.AutoFocus()
         }
     }
-});
-
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::analytics-index', (component) => {
-    AnalyticsSettingsForm.reloadValidation();
 });

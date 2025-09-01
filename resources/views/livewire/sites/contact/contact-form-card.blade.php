@@ -51,8 +51,6 @@
           <small class="text-muted d-block">Macros disponibles en asunto y confirmación: <code>{site}</code>, <code>{url}</code>, <code>{date}</code>, <code>{time}</code>.</small>
         </div>
       </div>
-
-      <div class="notification-container mb-4" wire:ignore></div>
     </x-vuexy-admin::form.card-form>
   </div>
 

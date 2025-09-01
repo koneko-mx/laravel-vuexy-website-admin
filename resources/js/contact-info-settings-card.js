@@ -1,7 +1,3 @@
-//import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
-//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
-
 // Inicializar formularios de ajustes de información de contacto
 window.ContactInfoSettingsForm = new FormCustomListener({
     formSelector: '#website-contact-info-card-card',
@@ -130,10 +126,6 @@ window.ContactInfoSettingsForm = new FormCustomListener({
     }
 });
 
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::contact-info-card', (component) => {
-    ContactInfoSettingsForm.reloadValidation();
-});
-
 // Inicializar formularios de ajustes de ubicación
 window.LocationSettingsForm = new FormCustomListener({
     formSelector: '#website-location-card-card',
@@ -206,8 +198,4 @@ window.LocationSettingsForm = new FormCustomListener({
             autoFocus: new FormValidation.plugins.AutoFocus()
         }
     }
-});
-
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::location-card', (component) => {
-    LocationSettingsForm.reloadValidation();
 });

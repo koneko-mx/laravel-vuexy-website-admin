@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo;
 
+use Koneko\VuexyAdmin\Support\Media\Image\ImageCore;
+use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteSeoProfile\MetaMode;
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite, WebsiteContent};
+use Livewire\Attributes\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\Attributes\Rule;
-use Koneko\VuexyAdmin\Support\Media\Image\ImageCore;
-use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite, WebsiteContent};
-use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteSeoProfile\MetaMode;
 
 final class TwitterCard extends Component
 {
@@ -16,6 +18,7 @@ final class TwitterCard extends Component
     public string $seoableType; // 'site' | 'content'
     public int    $seoableId;
     public bool   $isSite = false;
+
     public ?WebsiteSeoProfile $profile = null;
 
     // Modo
@@ -23,11 +26,11 @@ final class TwitterCard extends Component
     public string $twitter_mode = 'inherit'; // para site lo forzamos luego a override|disable
 
     // Campos twitter
-    public ?string $twitter_card   = 'summary_large_image'; // summary | summary_large_image
-    public ?string $twitter_site   = null; // @sitio (opcional)
-    public ?string $twitter_creator= null; // @autor (solo content)
-    public ?string $twitter_image  = null;
-    public ?string $twitter_url    = null;
+    public ?string $twitter_card    = 'summary_large_image'; // summary | summary_large_image
+    public ?string $twitter_site    = null; // @sitio (opcional)
+    public ?string $twitter_creator = null; // @autor (solo content)
+    public ?string $twitter_image   = null;
+    public ?string $twitter_url     = null;
 
     // Procesado (compartido con image-processor)
     #[Rule('in:cover,keep,contain')]
@@ -67,12 +70,8 @@ final class TwitterCard extends Component
             ? WebsiteSite::query()->findOrFail($seoableId)
             : WebsiteContent::query()->findOrFail($seoableId);
 
-        $scope = $this->isSite ? 'Site' : 'Content';
+        $scope = $this->isSite ? 'site' : 'content';
         $this->profile = $owner->seoProfile()->firstOrCreate([], ['scope' => $scope]);
-
-        // Modo por defecto: site = override, content = inherit
-        $defaultMode = $this->isSite ? MetaMode::Override->value : MetaMode::Inherit->value;
-        $this->twitter_mode = $this->profile->twitter_mode?->value ?? $defaultMode;
 
         $this->loadForm();
     }
@@ -81,7 +80,8 @@ final class TwitterCard extends Component
     {
         $p = $this->profile;
 
-        $this->twitter_mode    = $p->twitter_mode instanceof MetaMode ? $p->twitter_mode->value : (string) $p->twitter_mode;
+        $this->twitter_mode = $p->twitter_mode->value;
+
         $this->twitter_card    = $p->twitter_card ?: 'summary_large_image';
         $this->twitter_site    = $p->twitter_site;
         $this->twitter_creator = $p->twitter_creator;
@@ -119,6 +119,14 @@ final class TwitterCard extends Component
         } catch (\Throwable) {
             $this->source_aspect = null;
         }
+    }
+
+    public function resetForm(): void
+    {
+        $this->profile->refresh();
+        $this->loadForm();
+        $this->resetValidation();
+        $this->dispatch('notification', target: $this->targetNotify, type: 'info', message: 'Cambios descartados.');
     }
 
     public function save(): void

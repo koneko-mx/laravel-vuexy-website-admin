@@ -1,6 +1,5 @@
 //import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
-//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
+//import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
 
 // Inicializar formularios de ajustes de chat
 window.ChatSettingsForm = new FormCustomListener({
@@ -66,8 +65,4 @@ window.ChatSettingsForm = new FormCustomListener({
             autoFocus: new FormValidation.plugins.AutoFocus()
         }
     }
-});
-
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::chat-settings', (component) => {
-    ChatSettingsForm.reloadValidation();
 });

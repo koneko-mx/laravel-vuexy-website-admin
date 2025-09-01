@@ -20,19 +20,19 @@ return new class extends Migration
             $table->string('scope', 16)->default('content')->index(); // 'site' | 'content'
 
             // Schema.org
-            $table->string('schema_mode', 12)->default('inherit')->index(); // inherit|override|disable
+            $table->string('schema_mode', 12)->default('disable')->index(); // inherit|override|disable
             $table->json('schema_org')->nullable();
 
             // Favicon
-            $table->string('favicon_mode', 12)->default('inherit')->index();
+            $table->string('favicon_mode', 12)->default('disable')->index();
             $table->json('favicon')->nullable();
 
             // Locale
-            $table->string('locale_mode', 12)->default('inherit')->index();
+            $table->string('locale_mode', 12)->default('disable')->index();
             $table->string('locale', 8)->default('es-MX')->index();
 
             // Open Graph
-            $table->string('og_mode', 12)->default('inherit')->index(); // inherit|override|disable
+            $table->string('og_mode', 12)->default('disable')->index(); // inherit|override|disable
             $table->string('og_type')->nullable();
             $table->string('og_title')->nullable();
             $table->text('og_description')->nullable();
@@ -41,7 +41,7 @@ return new class extends Migration
             $table->string('og_site_name')->nullable();
 
             // Twitter Card
-            $table->string('twitter_mode', 12)->default('inherit')->index();
+            $table->string('twitter_mode', 12)->default('disable')->index();
             $table->string('twitter_card')->nullable();
             $table->string('twitter_title')->nullable();
             $table->text('twitter_description')->nullable();

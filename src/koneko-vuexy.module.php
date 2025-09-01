@@ -11,7 +11,7 @@ use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Integrations\{GoogleA
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Locations\BranchesCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Locations\LocationCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Manager\SiteOffCanvasForm;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo\{LocalLocationCard, OgCard, SchemaOrgCard, TwitterCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo\{LocaleCard, OgCard, SchemaOrgCard, TwitterCard};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Social\SocialCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Template\{TemplateCard};
 /*
@@ -120,10 +120,10 @@ return [
             'site.logo-on-dark-bg-card'  => LogoOnDarkBgCard::class,
 
             // SEO
-            'site.local-location-card' => LocalLocationCard::class,
-            'site.schema-org-card'     => SchemaOrgCard::class,
-            'site.og-card'             => OgCard::class,
-            'site.twitter-card'        => TwitterCard::class,
+            'site.locale-card'     => LocaleCard::class,
+            'site.schema-org-card' => SchemaOrgCard::class,
+            'site.og-card'         => OgCard::class,
+            'site.twitter-card'    => TwitterCard::class,
 
             // Contacto
             'site.contact-info-card' => ContactInfoCard::class,

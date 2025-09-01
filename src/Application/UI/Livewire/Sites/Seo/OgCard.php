@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo;
 
-use Illuminate\Support\Facades\Storage;
 use Koneko\VuexyAdmin\Support\Media\Image\ImageCore;
 use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteSeoProfile\MetaMode;
-use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteSeoProfile\WebsiteSeoProfileScope;
 use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite, WebsiteContent};
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -31,9 +29,9 @@ final class OgCard extends Component
     public string $og_mode = 'inherit'; // default para Content; Site se corrige en mount()
 
     // Campos OG
-    public ?string $og_type        = null;
-    public ?string $og_image       = null;
-    public ?string $og_url         = null;
+    public ?string $og_type  = null;
+    public ?string $og_image = null;
+    public ?string $og_url   = null;
 
     // ===== Procesamiento de imagen =====
     #[Rule('in:cover,keep')] // cover|keep (sin contain/stretch)
@@ -68,49 +66,25 @@ final class OgCard extends Component
         $this->seoableId   = $seoableId;
         $this->isSite      = $seoableType === 'site';
 
-        $owner = match ($seoableType) {
-            'site'    => WebsiteSite::query()->findOrFail($seoableId),
-            'content' => WebsiteContent::query()->findOrFail($seoableId),
-            default   => throw new \InvalidArgumentException('seoableType inválido'),
-        };
+        $owner = $this->isSite
+            ? WebsiteSite::query()->findOrFail($seoableId)
+            : WebsiteContent::query()->findOrFail($seoableId);
 
-        $this->computeUrls($owner);
-
-        $scope = $this->isSite ? WebsiteSeoProfileScope::Site->value : WebsiteSeoProfileScope::Content->value;
+        $scope = $this->isSite ? 'Site' : 'Content';
         $this->profile = $owner->seoProfile()->firstOrCreate([], ['scope' => $scope]);
 
-        // Para Site, default UX = override; para Content = inherit
-        $defaultMode = $this->isSite ? MetaMode::Override->value : MetaMode::Inherit->value;
-        $this->og_mode = $this->profile->og_mode?->value ?? $defaultMode;
-
         $this->loadForm();
-    }
-
-    private function computeUrls(WebsiteSite|WebsiteContent $owner): void
-    {
-        if ($owner instanceof WebsiteSite) {
-            $this->computed_site_url = $owner->getFullDomainUrl(); // https://dominio
-            $this->computed_page_url = null;
-        } else { // WebsiteContent
-            $siteUrl = $owner->site?->getFullDomainUrl();
-            $this->computed_site_url = $siteUrl;
-            $this->computed_page_url = $siteUrl
-                ? rtrim($siteUrl, '/') . '/' . ltrim($owner->slug, '/')
-                : null;
-        }
     }
 
     public function loadForm(): void
     {
         $p = $this->profile;
 
-        $this->og_mode        = $p->og_mode instanceof MetaMode
-            ? $p->og_mode->value
-            : (string) $p->og_mode;
+        $this->og_mode = $this->profile->og_mode->value;
 
-        $this->og_type        = $p->og_type;
-        $this->og_image       = $p->og_image;
-        $this->og_url         = $p->og_url;
+        $this->og_type   = $p->og_type;
+        $this->og_image  = $p->og_image;
+        $this->og_url    = $p->og_url;
 
         // Defaults de procesado
         $this->image_fit     = 'cover';

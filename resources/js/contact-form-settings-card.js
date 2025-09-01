@@ -1,7 +1,3 @@
-//import '@vuexy-admin/assets/js/notifications/LivewireNotification.js';
-import FormCustomListener from '@vuexy-admin/assets/js/forms/formCustomListener';
-//import registerLivewireHookOnce from '@vuexy-admin/assets/js/livewire/registerLivewireHookOnce';
-
 // Inicializar formularios de ajustes de Formularios de contacto
 window.ContactFormSettingsForm = new FormCustomListener({
     formSelector: '#website-contact-form-card-card',
@@ -79,8 +75,4 @@ window.ContactFormSettingsForm = new FormCustomListener({
             autoFocus: new FormValidation.plugins.AutoFocus()
         }
     }
-});
-
-registerLivewireHookOnce('morphed', 'vuexy-website-admin::contact-form-card', (component) => {
-    ContactFormSettingsForm.reloadValidation();
 });

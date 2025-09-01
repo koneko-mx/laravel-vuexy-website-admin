@@ -16,47 +16,31 @@ final class SocialCard extends Component
 
     public string $targetNotify = '#website-social-settings-card .notification-container';
 
-    private const GROUP   = 'social';
-    private const SECTION = 'website';
-    private const SUBGROUP = 'links';
+    private const GROUP     = 'social';
+    private const SECTION   = 'website';
+    private const SUBGROUP  = 'links';
+    private const DEFAULT_CC= 'MX'; // País por defecto para 10 dígitos sin prefijo
 
     // WhatsApp
-    #[Rule('nullable|string|min:8|max:20')]
+    #[Rule('nullable|string|max:30')] // permitimos separadores visibles
     public string $whatsapp_phone = '';
 
     #[Rule('nullable|string|max:500')]
     public string $whatsapp_message = '';
 
-    // Almacena URL lista para templates (se genera en save)
+    // URL lista para templates (se genera en save)
     public string $whatsapp = '';
 
     // Otros links (URLs completas normalizadas)
-    #[Rule('nullable|string|max:300')]
-    public string $facebook = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $instagram = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $linkedin = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $tiktok = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $x_twitter = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $google = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $pinterest = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $youtube = '';
-
-    #[Rule('nullable|string|max:300')]
-    public string $vimeo = '';
+    #[Rule('nullable|string|max:300')] public string $facebook  = '';
+    #[Rule('nullable|string|max:300')] public string $instagram = '';
+    #[Rule('nullable|string|max:300')] public string $linkedin  = '';
+    #[Rule('nullable|string|max:300')] public string $tiktok    = '';
+    #[Rule('nullable|string|max:300')] public string $x_twitter = '';
+    #[Rule('nullable|string|max:300')] public string $google    = '';
+    #[Rule('nullable|string|max:300')] public string $pinterest = '';
+    #[Rule('nullable|string|max:300')] public string $youtube   = '';
+    #[Rule('nullable|string|max:300')] public string $vimeo     = '';
 
     public function mount(WebsiteSite $site): void
     {
@@ -75,19 +59,10 @@ final class SocialCard extends Component
     {
         $data = $this->settings()->asArray()->all();
 
-        // WhatsApp (intentamos compatibilidad si ya hay URL guardada)
+        // WhatsApp
         $this->whatsapp          = (string)($data['whatsapp'] ?? '');
         $this->whatsapp_phone    = (string)($data['whatsapp_phone'] ?? '');
         $this->whatsapp_message  = (string)($data['whatsapp_message'] ?? '');
-
-        if ($this->whatsapp && (!$this->whatsapp_phone || !$this->whatsapp_message)) {
-            $parsed = $this->parseWaLink($this->whatsapp);
-            if ($parsed) {
-                [$phone, $msg] = $parsed;
-                $this->whatsapp_phone = $this->whatsapp_phone ?: $phone;
-                $this->whatsapp_message = $this->whatsapp_message ?: $msg;
-            }
-        }
 
         // Otros
         $this->facebook  = (string)($data['facebook'] ?? '');
@@ -107,27 +82,20 @@ final class SocialCard extends Component
 
     public function save(): void
     {
-        // Normaliza WhatsApp
-        $phone = $this->normalizePhone($this->whatsapp_phone);
-        $msg   = trim($this->whatsapp_message);
-        $this->whatsapp_phone   = $phone;
-        $this->whatsapp_message = $msg;
-        $this->whatsapp         = $phone ? $this->buildWaLink($phone, $msg) : '';
+        // Limpia espacios al guardar (no re-formateamos el teléfono, se guarda “como lo escribió”)
+        $this->whatsapp_phone   = trim($this->whatsapp_phone);
+        $this->whatsapp_message = trim($this->whatsapp_message);
 
-        // Normaliza URLs/handles
-        $this->facebook  = $this->normalizeSocial($this->facebook, 'facebook');
-        $this->instagram = $this->normalizeSocial($this->instagram, 'instagram');
-        $this->linkedin  = $this->normalizeSocial($this->linkedin, 'linkedin');
-        $this->tiktok    = $this->normalizeSocial($this->tiktok, 'tiktok');
-        $this->x_twitter = $this->normalizeSocial($this->x_twitter, 'x');
-        $this->google    = $this->normalizeUrl($this->google);
-        $this->pinterest = $this->normalizeSocial($this->pinterest, 'pinterest');
-        $this->youtube   = $this->normalizeSocial($this->youtube, 'youtube');
-        $this->vimeo     = $this->normalizeSocial($this->vimeo, 'vimeo');
-
-        // Validación condicional (solo si hay contenido)
-        $rules = [
-            'whatsapp_phone'   => ['nullable','string','regex:/^[+]?[1-9][0-9]{7,14}$/'],
+        // Validación (acepta separadores, valida sobre número limpio)
+        $this->validate([
+            'whatsapp_phone' => [
+                'nullable','string','max:30',
+                function ($attr, $value, $fail) {
+                    if (!$this->phoneIsValid((string)$value)) {
+                        $fail('Teléfono inválido. Usa E.164 (+…), 10 dígitos (MX/US/CA) o 1 + 10 (US/CA). Se permiten espacios, paréntesis, guiones y puntos.');
+                    }
+                }
+            ],
             'whatsapp_message' => ['nullable','string','max:500'],
             'whatsapp'         => ['nullable','url'],
             'facebook'         => ['nullable','url'],
@@ -139,26 +107,26 @@ final class SocialCard extends Component
             'pinterest'        => ['nullable','url'],
             'youtube'          => ['nullable','url'],
             'vimeo'            => ['nullable','url'],
-        ];
-        $messages = [
-            'whatsapp_phone.regex' => 'Usa formato internacional E.164, ej. +525512345678.',
-        ];
-        $this->validate($rules, $messages);
+        ]);
+
+        // Enlace wa.me (si podemos convertir a E.164)
+        $e164 = $this->phoneToE164($this->whatsapp_phone, self::DEFAULT_CC);
+        $this->whatsapp = $e164 ? $this->buildWaLinkFromE164($e164, $this->whatsapp_message) : '';
 
         // Persistencia
         $s = $this->settings();
-        $s->set('whatsapp_phone', $this->whatsapp_phone);
+        $s->set('whatsapp_phone',   $this->whatsapp_phone); // guardamos tal cual lo escribió
         $s->set('whatsapp_message', $this->whatsapp_message);
-        $s->set('whatsapp', $this->whatsapp);
-        $s->set('facebook', $this->facebook);
-        $s->set('instagram', $this->instagram);
-        $s->set('linkedin', $this->linkedin);
-        $s->set('tiktok', $this->tiktok);
-        $s->set('x_twitter', $this->x_twitter);
-        $s->set('google', $this->google);
-        $s->set('pinterest', $this->pinterest);
-        $s->set('youtube', $this->youtube);
-        $s->set('vimeo', $this->vimeo);
+        $s->set('whatsapp',         $this->whatsapp);
+        $s->set('facebook',  trim($this->facebook));
+        $s->set('instagram', trim($this->instagram));
+        $s->set('linkedin',  trim($this->linkedin));
+        $s->set('tiktok',    trim($this->tiktok));
+        $s->set('x_twitter', trim($this->x_twitter));
+        $s->set('google',    trim($this->google));
+        $s->set('pinterest', trim($this->pinterest));
+        $s->set('youtube',   trim($this->youtube));
+        $s->set('vimeo',     trim($this->vimeo));
 
         $this->dispatch('notification', target: $this->targetNotify, type: 'success', message: 'Se han guardado los cambios.');
         $this->dispatch('site-social-updated', id: $this->site->id);
@@ -178,62 +146,67 @@ final class SocialCard extends Component
 
     /* ---------------- Helpers ---------------- */
 
-    private function normalizePhone(string $raw): string
+    /** Quita separadores visibles, conserva + si existe, normaliza 00→+ y corrige +521…→+52… */
+    private function phoneClean(string $raw): string
     {
-        $v = preg_replace('/[^0-9+]/', '', trim($raw));
-        // quita 00 inicial → +
-        if (str_starts_with($v, '00')) $v = '+' . substr($v, 2);
+        $v = trim($raw);
+        // normaliza 00 prefijo internacional
+        if (str_starts_with($v, '00')) {
+            $v = '+' . substr($v, 2);
+        }
+        // elimina separadores visuales
+        $v = preg_replace('/[\s().-]+/', '', $v);
+        // asegura un solo '+' al inicio si el usuario lo repitió
+        if (str_contains($v, '+')) {
+            $v = '+' . ltrim($v, '+');
+        }
+        // corrige MX legados +521xxxxxxxxxx → +52xxxxxxxxxx
+        $v = preg_replace('/^\+521(\d{10})$/', '+52$1', $v);
         return $v;
     }
 
-    private function buildWaLink(string $phone, string $message): string
+    /** Valida E.164 o formatos locales MX/US/CA (10 dígitos / 1+10) sobre el número limpio */
+    private function phoneIsValid(string $raw): bool
     {
-        $p = preg_replace('/[^0-9]/', '', $phone); // wa.me no acepta +
-        $msg = rawurlencode($message ?: ''); // deja macros encoded (%7Bsite%7D...)
-        return $p ? "https://wa.me/{$p}" . ($msg ? "?text={$msg}" : '') : '';
+        $s = $this->phoneClean($raw);
+        if ($s === '' || $s === '+') return true;             // vacío es opcional
+        if (preg_match('/^\+[1-9]\d{7,14}$/', $s)) return true; // E.164 global
+        if (preg_match('/^\d{10}$/', $s)) return true;          // 10 dígitos (MX/US/CA)
+        if (preg_match('/^1\d{10}$/', $s)) return true;         // US/CA con 1
+        return false;
     }
 
-    private function parseWaLink(string $url): ?array
+    /** Convierte a E.164 si es posible; si son 10 dígitos, aplica país por defecto (MX/US/CA) */
+    private function phoneToE164(string $raw, string $default = 'MX'): ?string
     {
-        if (!str_contains($url, 'wa.me')) return null;
-        $parts = parse_url($url);
-        $phone = '';
-        if (!empty($parts['path'])) $phone = ltrim($parts['path'], '/');
-        $msg = '';
-        if (!empty($parts['query'])) {
-            parse_str($parts['query'], $q);
-            $msg = isset($q['text']) ? (string)urldecode($q['text']) : '';
+        $s = $this->phoneClean($raw);
+        if ($s === '' || $s === '+') return null;
+
+        if (str_starts_with($s, '+')) {
+            // ya viene con CC
+            return $s;
         }
-        return [$phone, $msg];
+
+        if (preg_match('/^\d{10}$/', $s)) {
+            return match (strtoupper($default)) {
+                'US','CA' => '+1'  . $s,
+                default   => '+52' . $s, // MX por defecto
+            };
+        }
+
+        if (preg_match('/^1\d{10}$/', $s)) {
+            return '+' . $s; // US/CA
+        }
+
+        // no convertible con nuestras reglas
+        return null;
     }
 
-    private function normalizeUrl(?string $raw): string
+    /** wa.me exige dígitos sin +; el mensaje va URL-encoded (con macros tal cual) */
+    private function buildWaLinkFromE164(string $e164, string $message): string
     {
-        $u = trim((string)$raw);
-        if ($u === '') return '';
-        if (!preg_match('~^https?://~i', $u)) $u = 'https://' . $u;
-        return $u;
-    }
-
-    private function normalizeSocial(?string $raw, string $provider): string
-    {
-        $v = trim((string)$raw);
-        if ($v === '') return '';
-        // Si viene como @handle o solo handle → a URL canónica
-        $handle = ltrim($v, '@');
-        // Si ya parece URL, devuelve normalizada
-        if (preg_match('~^https?://~i', $v)) return $this->normalizeUrl($v);
-
-        return match ($provider) {
-            'facebook'  => $this->normalizeUrl('facebook.com/' . $handle),
-            'instagram' => $this->normalizeUrl('instagram.com/' . $handle),
-            'linkedin'  => $this->normalizeUrl('linkedin.com/in/' . $handle), // ajusta a /company/ si usas páginas
-            'tiktok'    => $this->normalizeUrl('tiktok.com/@' . $handle),
-            'x'         => $this->normalizeUrl('x.com/' . $handle),
-            'pinterest' => $this->normalizeUrl('pinterest.com/' . $handle),
-            'youtube'   => $this->normalizeUrl('youtube.com/@' . $handle), // o /c/ o /channel/
-            'vimeo'     => $this->normalizeUrl('vimeo.com/' . $handle),
-            default     => $this->normalizeUrl($v),
-        };
+        $digits = ltrim($e164, '+');
+        $msg    = rawurlencode($message ?: '');
+        return $digits ? ('https://wa.me/' . $digits . ($msg ? ('?text=' . $msg) : '')) : '';
     }
 }
