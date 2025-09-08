@@ -13,7 +13,7 @@
 @endsection
 
 <div class="row">
-    <div class="col-12">
+    <div class="col-xl-10 col-md-12 col-sm-12 col-xs-12">
         @livewire('vuexy-website-admin::site.chat-card', ['site' => $site])
     </div>
 </div>

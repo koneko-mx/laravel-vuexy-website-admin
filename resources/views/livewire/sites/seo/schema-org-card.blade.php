@@ -9,26 +9,26 @@
     >
         {{-- Selector de modo --}}
         <x-vuexy-website-admin::form.mode-toggle
-            :is-site="$isSite"
             model="schema_mode"
             group="schema"
+            :scope="$scope"
             :value="$schema_mode"
             {{-- el contenedor padre define dónde togglear --}}
             data-scope="#website-schemaorg-card"
-            data-show-when-override=".display-enable"
-            data-show-when-inherit=".display-inherit"
+            data-show-when-enable=".display-enabled"
+            data-show-when-inherit=".display-inherited"
         />
 
         {{-- Aviso cuando está heredando (solo Content) --}}
-        <div class="display-inherit {{ $schema_mode === 'inherit' ? '' : 'd-none' }}">
+        <div class="display-inherited">
             <div class="alert alert-secondary py-2 mb-3 small">
                 Este contenido hereda el Schema del sitio. No hay campos editables aquí.
             </div>
         </div>
 
         {{-- Editor SOLO si está habilitado --}}
-        <div class="display-enable {{ $schema_mode === 'override' ? '' : 'd-none' }}">
-            <fieldset {{ $schema_mode === 'override' ? '' : 'disabled' }}>
+        <div class="display-enabled">
+            <fieldset>
                 <div class="row g-3 align-items-end">
                     <div class="col-12 col-md-7">
                         <x-vuexy-admin::form.select
@@ -81,81 +81,116 @@
             const $  = (sel, root = document) => root.querySelector(sel);
             const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-            /* =========================================================
-            * ModeToggle: muestra/oculta secciones según el modo elegido
-            * Requisitos del HTML (salen de tu Blade mode-toggle):
-            *  - Contenedor con id terminado en "-group"
-            *  - data-hidden="#id-del-hidden" (si usas hidden con wire:model.defer)
-            *  - data-scope / data-show-when-override / data-show-when-inherit (opcional)
-            * ========================================================= */
+
+
+
             const ModeToggle = {
-                apply(groupEl) {
-                    if (!groupEl) return;
-                    const scopeSel = groupEl.dataset.scope || '';
-                    const scope = scopeSel ? $(scopeSel) : groupEl.closest('form') || document;
-                    const mode = groupEl.querySelector('.btn-check[type="radio"]:checked')?.value;
+                groupSelector: '[role="group"][data-scope]', // tu <div id="mode-*-group"...>
+                _inited: new WeakSet(),
 
-                    const show = (selector, yes) => {
-                        if (!selector) return;
-                        $$(selector, scope).forEach(el => {
-                            el.classList.toggle('d-none', !yes);
-
-                            // Deshabilita fields visibles/invisibles con criterio
-                            const fieldsets = el.matches('fieldset') ? [el] : $$('fieldset', el);
-                            if (fieldsets.length) {
-                                fieldsets.forEach(fs => fs.disabled = !yes);
-                            } else {
-                                $$('input,select,textarea,button', el).forEach(i => i.disabled = !yes);
-                            }
-                        });
-                    };
-
-                    show(groupEl.dataset.showWhenOverride, mode === 'override');
-                    show(groupEl.dataset.showWhenInherit,  mode === 'inherit');
-                    show(groupEl.dataset.showWhenDisable,  mode === 'disable');
+                _show(els, show) {
+                    els.forEach(el => el.classList.toggle('d-none', !show));
                 },
 
-                initAll() {
-                    $$('[id$="-group"][data-hidden]').forEach(el => this.apply(el));
+                _getState(group) {
+                    const checked = $('input[type="radio"]:checked', group);
+                    return checked ? checked.value : null;
                 },
 
-                // Delegación global: radio -> hidden (wire:model.defer) + re-aplicar UI
-                onRadioChange(ev) {
-                    const r = ev.target;
-                    if (!r.matches('.btn-check[type="radio"]')) return;
-                    const groupEl = r.closest('[id$="-group"][data-hidden]');
-                    if (!groupEl) return;
+                _collectTargets(group) {
+                    const scopeSel   = group.dataset.scope || 'body';
+                    const container  = $(scopeSel) || document;
 
-                    // Refleja en hidden (si existe) para Livewire (defer => no AJAX inmediato)
-                    const hidden = $(groupEl.dataset.hidden);
-                    if (hidden) {
-                        hidden.value = r.value;
-                        hidden.dispatchEvent(new Event('input', { bubbles: true })); // marca dirty
+                    const selEnabled = group.dataset.showWhenEnable || '.display-enabled';
+                    const selInherit = group.dataset.showWhenInherit || '.display-inherited';
+
+                    const enabledEls = $$(selEnabled, container);
+                    const inheritEls = $$(selInherit, container);
+
+                    return { container, enabledEls, inheritEls };
+                },
+
+                _apply(group) {
+                    const scope = (group.dataset.scopeType || group.getAttribute('data-scope-type') || group.dataset.scopeType) || // opcional si quieres distinguir
+                                    (group.getAttribute('data-scope-kind') || '').trim() ||
+                                    (group.getAttribute('data-scope') ? group.getAttribute('data-scope') : 'site'); // por compatibilidad
+                    const value = this._getState(group);
+                    const { enabledEls, inheritEls } = this._collectTargets(group);
+
+                    // Normaliza scope a 'site' o 'content' (tu markup ya limita las opciones del radio)
+                    const scopeKind = group.getAttribute('data-scope-kind') || group.getAttribute('data-scope-type') || (group.getAttribute('data-scope') === '#website-schemaorg-card' ? (group.dataset.scopeRole || 'site') : 'site');
+
+                    // Reglas de visibilidad
+                    // SITE:   site => enabled; disable => nada
+                    // CONTENT: site => inherit; content => enabled; disable => nada
+                    const hideBoth = () => { this._show(enabledEls, false); this._show(inheritEls, false); };
+
+                    if ((scopeKind || '').includes('content')) {
+                        if (value === 'site') {
+                            // Hereda del sitio
+                            this._show(enabledEls, false);
+                            this._show(inheritEls, true);
+                        } else if (value === 'content') {
+                            this._show(inheritEls, false);
+                            this._show(enabledEls, true);
+                        } else { // disable
+                            hideBoth();
+                        }
+                    } else { // scope = site
+                        if (value === 'site') {
+                            this._show(inheritEls, false);
+                            this._show(enabledEls, true);
+                        } else { // disable (o cualquier otro)
+                            hideBoth();
+                        }
+                    }
+                },
+
+                _bind(group) {
+                    if (this._inited.has(group)) return;
+
+                    // Marca el scope lógico (site|content) si te es útil distinguir explícitamente
+                    // Puedes pasar data-scope-kind="site" | "content" desde el componente Blade si prefieres.
+                    if (!group.getAttribute('data-scope-kind')) {
+                        // Heurística: si existe el radio "content" en el grupo, asumimos scope=content
+                        const hasContentOption = !!$('input[type="radio"][value="content"]', group);
+                        group.setAttribute('data-scope-kind', hasContentOption ? 'content' : 'site');
                     }
 
-                    // Actualiza UI
-                    ModeToggle.apply(groupEl);
+                    group.addEventListener('change', (ev) => {
+                        if (ev.target && ev.target.matches('input[type="radio"]')) {
+                            this._apply(group);
+                        }
+                    });
 
-                    // Habilita botones del form si usas tu listener
-                    const form = groupEl.closest('form');
-                    form?.dispatchEvent(new Event('change', { bubbles: true }));
+                    this._inited.add(group);
+                    this._apply(group); // estado inicial
+                },
+
+                mountOnce(root = document) {
+                    $$(this.groupSelector, root).forEach(g => this._bind(g));
                 },
 
                 mount() {
-                    document.addEventListener('change', this.onRadioChange);
+                    // DOM listo
+                    if (document.readyState !== 'loading') this.mountOnce();
+                    else document.addEventListener('DOMContentLoaded', () => this.mountOnce());
 
-                    // Primera pasada
-                    document.addEventListener('DOMContentLoaded', () => this.initAll());
-
-                    // Livewire v3: re-aplica tras cada morph/update
+                    // Livewire
                     document.addEventListener('livewire:init', () => {
-                        const re = () => this.initAll();
-                        Livewire.hook('morph.updated', re);
-                        Livewire.hook('commit',        re);
-                        Livewire.hook('message.failed',re);
+                        const re = () => this.mountOnce();
+                        if (window.Livewire?.hook) {
+                            Livewire.hook('morph.updated', re);
+                            Livewire.hook('commit', re);
+                            Livewire.hook('message.failed', re);
+                        }
                     });
                 }
             };
+
+
+
+
 
             /* =========================================================
             * SchemaEditor: acciones del JSON-LD + formCustomListener

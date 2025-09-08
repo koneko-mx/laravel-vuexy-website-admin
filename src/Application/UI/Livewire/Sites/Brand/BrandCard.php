@@ -18,9 +18,6 @@ final class BrandCard extends Component
     #[Rule('required|string|max:64')]
     public string $brand_name = '';
 
-    #[Rule('nullable|string|max:160')]
-    public ?string $copyright = null;
-
     #[Rule('nullable|string|max:254')]
     public ?string $slogan = null;
 
@@ -33,7 +30,6 @@ final class BrandCard extends Component
     public function loadForm(): void
     {
         $this->brand_name = $this->site->brand_name ?? '';
-        $this->copyright  = $this->site->copyright;
         $this->slogan     = $this->site->slogan;
     }
 
@@ -46,7 +42,6 @@ final class BrandCard extends Component
         $this->site = WebsiteSite::query()->findOrFail($this->site->id);
         $this->site->update([
             'brand_name' => trim($this->brand_name),
-            'copyright'  => $this->copyright ? trim($this->copyright) : null,
             'slogan'  => $this->slogan ? trim($this->slogan) : null,
         ]);
 

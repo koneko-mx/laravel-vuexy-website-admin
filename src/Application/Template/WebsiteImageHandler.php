@@ -7,8 +7,7 @@ namespace Koneko\VuexyWebsiteAdmin\Application\Template;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Koneko\VuexyAdmin\Application\Settings\Manager\KonekoSettingManager;
-use Koneko\VuexyWebsiteAdmin\Application\LocalModule as WebsiteModule;
-use Koneko\VuexyWebsiteAdmin\Models\WebsiteSite;
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSite, WebsiteSeoProfile};
 use Illuminate\Http\UploadedFile;
 
 /**
@@ -33,37 +32,36 @@ class WebsiteImageHandler
 
     // Variantes admitidas para logos
     // "" (default), "h" (horizontal), "dark", "h_dark" (horizontal + dark)
-    public const LOGO_VARIANTS = ['', 'h', 'dark', 'h_dark'];
+    public const LOGO_VARIANTS = ['default', 'h_default', 'dark', 'h_dark'];
 
-    private const GROUP   = 'layout';
-    private const SECTION = 'website';
+    private const GROUP = 'layout';
+    //private const SECTION = 'website';
 
     public function __construct()
     {
         $this->driver = config('image.driver', 'gd');
     }
 
-    private function settings(WebsiteSite $site): KonekoSettingManager
+    private function settings(WebsiteSite $site, $section): KonekoSettingManager
     {
-        return settings(WebsiteModule::class)
-            ->context(self::GROUP, self::SECTION)
+        return settings('website-admin')
+            ->context(self::GROUP, $section)
             ->scope($site);
     }
 
     /**
      * Procesa y guarda múltiples versiones del favicon (recorta a tamaño exacto: cover WxH).
      */
-    public function processAndSaveFavicon(UploadedFile $image, WebsiteSite $site): void
+    public function processAndSaveFavicon(UploadedFile $image, WebsiteSeoProfile $profile): void
     {
-        $old_favicons = self::settings($site)->subGroup('favicon')->asArray()->all();
+        $old_favicons = $profile->favicons;
         $imageManager = new ImageManager($this->driver);
-
-        Storage::disk($this->imageDisk)->makeDirectory(self::FAVICON_BASE_PATH);
 
         $baseName = uniqid('favicon_', true);
 
         try {
             $original = $imageManager->read($image->getRealPath());
+            $favicons = [];
 
             foreach ($this->getFaviconSizes() as $size => [$w, $h]) {
                 $resized   = clone $original;
@@ -73,13 +71,20 @@ class WebsiteImageHandler
                 Storage::disk($this->imageDisk)
                     ->put(self::FAVICON_BASE_PATH . $file_name, $resized->toPng(indexed: true));
 
-                self::settings($site)->subGroup('favicon')->set($size, $file_name);
+                $favicons[$size] = $file_name;
             }
 
             if ($old_favicons) {
                 $delete_images = array_map(fn($v) => self::FAVICON_BASE_PATH . $v, $old_favicons);
                 $this->deleteOldFiles($delete_images);
             }
+
+            $p = WebsiteSeoProfile::query()->findOrFail($profile->id);
+
+            $p->fill([
+                'favicon' => $favicons,
+            ])->save();
+
         } finally {
             $image->delete();
         }
@@ -89,7 +94,7 @@ class WebsiteImageHandler
      * Procesa y guarda un logo en UNA variante (e.g. '', 'h', 'dark', 'h_dark').
      * Mantiene proporción real: redimensiona por área de píxeles, sin recortes.
      */
-    public function processAndSaveImageLogo(UploadedFile $image, WebsiteSite $site, string $variant = ''): void
+    public function processAndSaveImageLogo(UploadedFile $image, WebsiteSite $site, string $variant = 'default'): void
     {
         $imageManager = new ImageManager($this->driver);
         $original     = $imageManager->read($image->getRealPath());
@@ -123,12 +128,10 @@ class WebsiteImageHandler
      * Obtiene las variables (paths/base64) del logo para una variante.
      * $variant: '', 'h', 'dark', 'h_dark'
      */
-    public function getImageLogoVars(WebsiteSite $site, string $variant = ''): array
+    public function getImageLogoVars(WebsiteSite $site, string $sub_group): array
     {
-        $suffixGroup = $variant ? "_{$variant}" : '';
-
-        $settings = self::settings($site)
-            ->subGroup('logo' . $suffixGroup)
+        $settings = $this->settings($site, 'logo')
+            ->subGroup($sub_group)
             ->asArray()
             ->all() ?? [];
 
@@ -154,9 +157,8 @@ class WebsiteImageHandler
     public function getAllLogoVars(WebsiteSite $site): array
     {
         $out = [];
-        foreach (self::LOGO_VARIANTS as $v) {
-            $key        = $v === '' ? 'default' : $v;
-            $out[$key]  = $this->getImageLogoVars($site, $v);
+        foreach (self::LOGO_VARIANTS as $key => $v) {
+            $out[$key] = $this->getImageLogoVars($site, $v);
         }
         return $out;
     }
@@ -164,7 +166,7 @@ class WebsiteImageHandler
     /**
      * Guarda (borra previas y re-genera) small/medium/large/base64 de una variante.
      */
-    private function saveLogoForVariant($originalImage, WebsiteSite $site, string $variant = ''): void
+    private function saveLogoForVariant($originalImage, WebsiteSite $site, string $variant = 'default'): void
     {
         // Limpia versiones antiguas SOLO de la variante
         $this->deleteOldLogoImages($site, $variant);
@@ -179,37 +181,35 @@ class WebsiteImageHandler
     /**
      * Redimensiona y guarda un logo (sin recorte, conservando aspecto).
      */
-    private function saveResizedLogo($image, int $maxPixels, WebsiteSite $site, string $size = '', string $variant = ''): void
+    private function saveResizedLogo($image, int $maxPixels, WebsiteSite $site, string $size = '', string $variant = 'default'): void
     {
         //$size  = $size ? "_{$size}" : '';
-        $variant = $variant ? "_{$variant}" : '';
+        //$variant = $variant ? "_{$variant}" : '';
 
         $resized = clone $image;
         $this->resizeImageToMaxPixels($resized, $maxPixels);
 
-        $fileName = uniqid("logo_{$size}{$variant}_", true) . '.png';
+        $fileName = uniqid("logo_{$size}_{$variant}_", true) . '.png';
         $path     = self::LOGO_BASE_PATH . $fileName;
 
         Storage::disk($this->imageDisk)->put($path, $resized->toPng(indexed: true));
 
         $keyName = $size;
 
-        $this->settings($site)->subGroup('logo' . $variant)->set($keyName, $fileName);
+        $this->settings($site, 'logo')->subGroup($variant)->set($keyName, $fileName);
     }
 
     /**
      * Guarda un logo en base64 (JPG calidad 40 por tamaño/uso inline). Mantiene proporción.
      */
-    private function saveBase64Logo($image, int $maxPixels, WebsiteSite $site, string $variant = ''): void
+    private function saveBase64Logo($image, int $maxPixels, WebsiteSite $site, string $variant = 'default'): void
     {
         $resized = clone $image;
         $this->resizeImageToMaxPixels($resized, $maxPixels);
 
-        $base64   = (string) $resized->toJpg(40)->toDataUri();
-        $variant  = $variant ? "_{$variant}" : '';
-        $keyName  = "base64{$variant}";
+        $base64 = (string) $resized->toJpg(40)->toDataUri();
 
-        $this->settings($site)->subGroup('logo' . $variant)->set($keyName, $base64);
+        $this->settings($site, 'logo')->subGroup($variant)->set('base64', $base64);
     }
 
     /**
@@ -228,12 +228,10 @@ class WebsiteImageHandler
      * Elimina versiones anteriores de logos PARA UNA variante.
      * Evita borrar valores base64 del settings store.
      */
-    private function deleteOldLogoImages(WebsiteSite $site, string $variant = ''): void
+    private function deleteOldLogoImages(WebsiteSite $site, string $variant = 'default'): void
     {
-        $suffixGroup = $variant ? "_{$variant}" : '';
-
-        $image_files = $this->settings($site)
-            ->subGroup('logo' . $suffixGroup)
+        $image_files = $this->settings($site, 'logo')
+            ->subGroup($variant)
             ->asArray()
             ->all() ?? [];
 

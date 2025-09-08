@@ -13,10 +13,10 @@
 @endsection
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
         @livewire('vuexy-website-admin::site.description-card', ['site' => $site])
     </div>
-    <div class="col-6">
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
         @livewire('vuexy-website-admin::site.visibility-security-card', ['site' => $site])
     </div>
 </div>

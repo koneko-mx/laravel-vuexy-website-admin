@@ -16,8 +16,8 @@
 
       public string $targetNotify = '#website-branches-card .notification-container';
 
-      private const GROUP    = 'contact';
-      private const SECTION  = 'website';
+      private const GROUP    = 'layout';
+      private const SECTION  = 'contact';
       private const SUBGROUP = 'branches';
 
       /** @var array<int, array<string, mixed>> */
@@ -32,7 +32,7 @@
 
       private function settings(): KonekoSettingManager
       {
-          return settings(WebsiteModule::class)
+          return settings('website-admin')
               ->context(self::GROUP, self::SECTION, self::SUBGROUP)
               ->scope($this->site);
       }

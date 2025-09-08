@@ -14,20 +14,23 @@ declare(strict_types=1);
 namespace Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Template;
 
 use Koneko\VuexyWebsiteAdmin\Application\Template\TemplateRegistry;
-use Koneko\VuexyWebsiteAdmin\Models\WebsiteSite;
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteContent, WebsiteSite, WebsiteSeoProfile};
 use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 final class TemplateCard extends Component
 {
-    public string $targetNotify = '#website-template-card .notification-container';
+    public string $seoableType;   // 'site' | 'content'
+    public int    $seoableId;
+    public bool   $isSite = false;
 
-    public WebsiteSite $site;
+    public ?WebsiteSeoProfile $profile = null;
+    public ?WebsiteContent $content = null;
 
-    /**
-     * Opciones agrupadas: ["Grupo" => ["items" => ["pkg:layout" => "Label"]]]
-     */
-    public array $template_options = [];
+    #[Rule('nullable|string|in:site,content,disable')]
+    public ?string $template_mode = null;
+
+    public array $template_list = [];
 
     #[Rule('required|string|max:64')]
     public string $template = '';
@@ -36,30 +39,38 @@ final class TemplateCard extends Component
     #[Rule('regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/')]
     public string $theme_color = '#0ea5e9';
 
-    /**
-     * Cargar datos iniciales una vez que $site ya está vinculado.
-     */
-    public function mount(WebsiteSite $site): void
+    public string $targetNotify = '#website-template-card .notification-container';
+
+    public function mount(string $seoableType, int $seoableId): void
     {
-        $this->site = $site->withoutRelations();
-        $this->template_options = TemplateRegistry::groupedOptions();
+        $this->seoableType = $seoableType;
+        $this->seoableId   = $seoableId;
+        $this->isSite      = $seoableType === 'site';
+
+        $owner = $this->isSite
+            ? WebsiteSite::query()->findOrFail($seoableId)
+            : WebsiteContent::query()->findOrFail($seoableId);
+
+        $scope = $this->isSite ? 'site' : 'content';
+        $this->profile = $owner->seoProfile()->firstOrCreate([], ['scope' => $scope]);
+        $this->content = $this->isSite ? null : $owner;
+
+        $this->template_list = TemplateRegistry::groupedOptions();
+
         $this->loadForm();
     }
 
-    /**
-     * (Re)carga los valores desde el modelo
-     */
     public function loadForm(): void
     {
-        // Asignación directa sin segunda consulta
-        $this->template    = ($this->site->package ?: '') . ':' . ($this->site->layout ?: '');
-        $this->template    = trim($this->template, ':');
-        $this->theme_color = $this->site->theme_color ?: $this->theme_color;
+        $p = $this->profile;
+        $c = $this->content;
+
+        $this->template_mode = $c ? $c->template_mode->value : null;
+        $this->template      = ($p->package ?: '') . ':' . ($p->layout ?: '');
+        $this->template      = trim($this->template, ':');
+        $this->theme_color   = $p->theme_color ?: $this->theme_color;
     }
 
-    /**
-     * Guardar cambios con validaciones extra
-     */
     public function save(): void
     {
         // Valida atributos
@@ -77,7 +88,7 @@ final class TemplateCard extends Component
 
         // Validar contra opciones disponibles (evita valores arbitrarios)
         $allowed = [];
-        foreach ($this->template_options as $group) {
+        foreach ($this->template_list as $group) {
             foreach ($group['items'] as $key => $_label) {
                 $allowed[$key] = true;
             }
@@ -88,18 +99,25 @@ final class TemplateCard extends Component
         }
 
         try {
-            $this->site->fill([
+            $this->profile->fill([
                 'package'     => $package,
                 'layout'      => $layout,
                 'theme_color' => $this->theme_color,
             ])->save();
+
+
+            if ($this->content) {
+                $this->content->fill([
+                    'template_mode' => $this->template_mode,
+                ])->save();
+            }
 
             // Notificación UI
             $this->dispatch(
                 'notification',
                 target: $this->targetNotify,
                 type: 'success',
-                message: 'Configuración guardada correctamente.'
+                message: 'Configuración de plantilla guardada correctamente.'
             );
 
         } catch (\Throwable $e) {
@@ -115,10 +133,11 @@ final class TemplateCard extends Component
 
     public function resetForm(): void
     {
-        $this->site->refresh();
-        $this->loadForm();
         $this->resetValidation();
-        $this->dispatch('notification', target: $this->targetNotify, type: 'info', message: 'Se descartaron los cambios.');
+        $this->profile->refresh();
+        if($this->content) $this->content->refresh();
+        $this->loadForm();
+        $this->dispatch('notification', target: $this->targetNotify, type: 'info', message: 'Cambios descartados.');
     }
 
     public function render()

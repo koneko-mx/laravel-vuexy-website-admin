@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 use Illuminate\Support\Facades\{Auth, URL};
 use Koneko\VuexyAdmin\Support\Traits\Audit\{HasCreator, HasUpdater};
 use Koneko\VuexyAdmin\Support\Traits\Model\HasVuexyModelMetadata;
-use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteContents\WebsiteContentStatus;
+use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteContents\{WebsiteContentStatus, WebsiteContentType};
 
 class WebsiteContent extends Model
 {
@@ -21,37 +21,41 @@ class WebsiteContent extends Model
 
     public string $sortColumn        = 'title';
     public string $defaultSortOrder  = 'asc';
-    public string $singularName      = 'contenido web';
+    public string $singularName      = 'página';
     public string $focusColumnOnOpen = 'title';
 
     // ===================== CONFIGURACIÓN =====================
 
     protected $fillable = [
-        'site_id','title','slug','description','keywords',
-        'overwrite_author','author','overwrite_copyright','copyright',
-        'canonical_url','noindex','nofollow',
-        'package','layout','theme_color',
+        'site_id','type',
+        'title','slug','description','keywords',
+        'canonical_url',
+        'noindex','nofollow',
         'header_blocks','content_blocks','footer_blocks',
         'roles','permissions','hide_if_authenticated','hide_if_guest',
         'visible_from','visible_until',
-        'status','enable_cache','cache_ttl',
+        'status',
+        'enable_cache','cache_ttl',
         'created_by','updated_by'
       ];
 
       protected $casts = [
-        'keywords'       => 'array',
-        'header_blocks'  => 'array',
-        'content_blocks' => 'array',
-        'footer_blocks'  => 'array',
-        'roles'          => 'array',
-        'permissions'    => 'array',
+        'type'              => WebsiteContentType::class,
+        'keywords'          => 'array',
+        'noindex'           => 'boolean',
+        'nofollow'          => 'boolean',
+        'header_blocks'     => 'array',
+        'content_blocks'    => 'array',
+        'footer_blocks'     => 'array',
+        'roles'             => 'array',
+        'permissions'       => 'array',
         'hide_if_authenticated' => 'boolean',
-        'hide_if_guest'  => 'boolean',
-        'visible_from'   => 'datetime',
-        'visible_until'  => 'datetime',
-        'status'         => WebsiteContentStatus::class,
-        'enable_cache'   => 'boolean',
-        'cache_ttl'      => 'integer',
+        'hide_if_guest'     => 'boolean',
+        'visible_from'      => 'datetime',
+        'visible_until'     => 'datetime',
+        'status'            => WebsiteContentStatus::class,
+        'enable_cache'      => 'boolean',
+        'cache_ttl'         => 'integer',
       ];
 
     protected $auditInclude = [
@@ -77,7 +81,7 @@ class WebsiteContent extends Model
 
     public function getDisplayName(): string
     {
-        return $this->title;
+        return (string) $this->title;
     }
 
     public function getEffectiveTitle(?WebsiteSite $site = null): string
@@ -87,6 +91,12 @@ class WebsiteContent extends Model
         return $titleDomain . ($this->title ? ' | ' . $this->title : '');
     }
 
+    protected function slug(): Attribute
+    {
+        return Attribute::make(
+            set: fn($value) => Str::slug((string) $value, '-')
+        );
+    }
 
     /*
     public function toHtml(): string

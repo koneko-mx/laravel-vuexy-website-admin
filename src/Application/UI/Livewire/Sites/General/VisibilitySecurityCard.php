@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\General;
 
 use Illuminate\Contracts\View\View as ViewContract;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule as VRule;
 use Koneko\VuexyWebsiteAdmin\Application\Enums\WebsiteContents\WebsiteContentStatus;
 use Koneko\VuexyWebsiteAdmin\Application\Enums\Websites\WebsiteSiteStatus;
@@ -35,18 +36,22 @@ final class VisibilitySecurityCard extends Component
     public string $status = '';
 
     public $status_options = [],
-        $contents_options = [];
+        $pages_options = [];
 
     public function mount(WebsiteSite $site): void
     {
         $this->site = $site;
 
         $this->status_options = WebsiteSiteStatus::options();
-        $this->contents_options = WebsiteContent::query()
+        $this->pages_options = WebsiteContent::query()
+            ->select([
+                'id',
+                DB::raw("CONCAT(CONCAT_WS('    - /', title, slug), IF(status='draft',  '   [Borrador]', '')) as title"),
+            ])
             ->where('site_id', $site->id)
             ->whereIn('status', [
                 WebsiteContentStatus::Published->value,
-                WebsiteContentStatus::Hidden->value,
+                WebsiteContentStatus::Draft->value,
             ])
             ->orderBy('title')
             ->pluck('title','id')

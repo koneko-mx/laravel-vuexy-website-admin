@@ -16,8 +16,8 @@ final class TwitterApiCard extends Component
 
     public string $targetNotify = '#website-twitter-api-settings-card .notification-container';
 
-    private const GROUP    = 'api';
-    private const SECTION  = 'website';
+    private const GROUP    = 'layout';
+    private const SECTION  = 'api';
     private const SUBGROUP = 'twitter';
 
     #[Rule('boolean')]
@@ -41,7 +41,7 @@ final class TwitterApiCard extends Component
 
     private function settings(): KonekoSettingManager
     {
-        return settings(WebsiteModule::class)
+        return settings('website-admin')
             ->context(self::GROUP, self::SECTION, self::SUBGROUP)
             ->scope($this->site);
     }

@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo;
 
-use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite, WebsiteContent};
 use Livewire\Attributes\Rule;
 use Livewire\Component;
+use Koneko\VuexyWebsiteAdmin\Models\{WebsiteSeoProfile, WebsiteSite, WebsiteContent};
 
 final class LocaleCard extends Component
 {
-    public string $seoableType;   // 'site' | 'content'
-    public int    $seoableId;
+    public string $scope;   // 'site' | 'content'
+    public int    $scopeId;
     public bool   $isSite = false;
 
     public ?WebsiteSeoProfile $profile = null;
+    public ?WebsiteContent $content = null;
 
-    #[Rule('string|in:inherit,override,disable')]
-    public string $locale_mode = 'inherit'; // default para Content; Site se corrige en mount()
+    #[Rule('nullable|string|in:site,content,disable')]
+    public ?string $locale_mode = null;
 
     #[Rule('required|string|in:es-MX,es-ES,en-US,en-GB')]
     public string $locale = 'es-MX';
@@ -30,18 +31,19 @@ final class LocaleCard extends Component
 
     public string $targetNotify = '#website-seo-locale-card .notification-container';
 
-    public function mount(string $seoableType, int $seoableId): void
+    public function mount(string $scope, int $scopeId): void
     {
-        $this->seoableType = $seoableType;
-        $this->seoableId   = $seoableId;
-        $this->isSite      = $seoableType === 'site';
+        $this->scope = $scope;
+        $this->scopeId   = $scopeId;
+        $this->isSite      = $scope === 'site';
 
         $owner = $this->isSite
-            ? WebsiteSite::query()->findOrFail($seoableId)
-            : WebsiteContent::query()->findOrFail($seoableId);
+            ? WebsiteSite::query()->findOrFail($scopeId)
+            : WebsiteContent::query()->findOrFail($scopeId);
 
         $scope = $this->isSite ? 'site' : 'content';
         $this->profile = $owner->seoProfile()->firstOrCreate([], ['scope' => $scope]);
+        $this->content = $this->isSite ? null : $owner;
 
         $this->loadForm();
     }
@@ -49,9 +51,10 @@ final class LocaleCard extends Component
     public function loadForm(): void
     {
         $p = $this->profile;
+        $c = $this->content;
 
-        $this->locale_mode = $p->locale_mode->value;
-        $this->locale      = $p->locale;
+        $this->locale_mode = $c ? $c->locale_mode->value : null;
+        $this->locale      = $p->locale ?: $this->locale;
     }
 
     public function save(): void
@@ -59,18 +62,24 @@ final class LocaleCard extends Component
         $this->validate();
 
         $this->profile->fill([
-            'locale_mode' => $this->locale_mode,
-            'locale'      => $this->locale,
+            'locale' => $this->locale,
         ])->save();
+
+        if ($this->content) {
+            $this->content->fill([
+                'locale' => $this->locale,
+            ])->save();
+        }
 
         $this->dispatch('notification', target: $this->targetNotify, type: 'success', message: 'SEO (Idioma/Geo) guardado.');
     }
 
     public function resetForm(): void
     {
-        $this->profile->refresh();
-        $this->loadForm();
         $this->resetValidation();
+        $this->profile->refresh();
+        if($this->content) $this->content->refresh();
+        $this->loadForm();
         $this->dispatch('notification', target: $this->targetNotify, type: 'info', message: 'Cambios descartados.');
     }
 

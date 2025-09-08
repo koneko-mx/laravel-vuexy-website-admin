@@ -25,7 +25,7 @@ class SiteOffCanvasForm extends AbstractFormOffCanvasComponent
      */
     public $domain,
         $title,
-        $prevent_indexed,
+        $robots_mode,
         $www_redirect,
         $force_https;
 
@@ -53,7 +53,7 @@ class SiteOffCanvasForm extends AbstractFormOffCanvasComponent
     protected function defaults(): array
     {
         return [
-            'prevent_indexed' => false,
+            'robots_mode' => 'suspended',
             'www_redirect' => true,
             'force_https' => true,
         ];

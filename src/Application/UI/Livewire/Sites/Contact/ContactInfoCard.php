@@ -16,8 +16,8 @@ final class ContactInfoCard extends Component
 
     public string $targetNotify = '#website-contact-info-card .notification-container';
 
-    private const GROUP    = 'contact';
-    private const SECTION  = 'website';
+    private const GROUP    = 'layout';
+    private const SECTION  = 'contact';
     private const SUBGROUP = 'info';
 
     // Teléfonos (E.164 opcional) + extensión numérica opcional
@@ -39,7 +39,7 @@ final class ContactInfoCard extends Component
 
     // Texto de horario libre (opcional) — para horarios estructurados usa BusinessHoursCard
     #[Rule('nullable|string|max:120')]
-    public string $hours_text = '';
+    public string $working_hours = '';
 
     public function mount(WebsiteSite $site): void
     {
@@ -49,7 +49,7 @@ final class ContactInfoCard extends Component
 
     private function settings(): KonekoSettingManager
     {
-        return settings(WebsiteModule::class)
+        return settings('website-admin')
             ->context(self::GROUP, self::SECTION, self::SUBGROUP)
             ->scope($this->site);
     }
@@ -62,7 +62,7 @@ final class ContactInfoCard extends Component
         $this->phone_number_2    = (string)($data['phone_number_2'] ?? '');
         $this->phone_number_2_ext= (string)($data['phone_number_2_ext'] ?? '');
         $this->email             = (string)($data['email'] ?? '');
-        $this->hours_text        = (string)($data['hours_text'] ?? '');
+        $this->working_hours        = (string)($data['working_hours'] ?? '');
     }
 
     public function save(): void
@@ -73,7 +73,7 @@ final class ContactInfoCard extends Component
         $this->phone_number_2    = $this->normalizePhone($this->phone_number_2);
         $this->phone_number_2_ext= $this->digitsOnly($this->phone_number_2_ext);
         $this->email             = strtolower(trim($this->email));
-        $this->hours_text        = trim($this->hours_text);
+        $this->working_hours        = trim($this->working_hours);
 
         $this->validate([
             'phone_number'       => ['nullable','regex:/^[+]?[1-9][0-9]{4,19}$/'],
@@ -81,7 +81,7 @@ final class ContactInfoCard extends Component
             'phone_number_2'     => ['nullable','regex:/^[+]?[1-9][0-9]{4,19}$/'],
             'phone_number_2_ext' => ['nullable','regex:/^\d{1,10}$/'],
             'email'              => ['nullable','email:rfc','max:254'],
-            'hours_text'         => ['nullable','string','max:120'],
+            'working_hours'         => ['nullable','string','max:120'],
         ], [
             'phone_number.regex'    => 'Teléfono inválido (E.164).',
             'phone_number_2.regex'  => 'Teléfono alterno inválido (E.164).',
@@ -95,7 +95,7 @@ final class ContactInfoCard extends Component
         $s->set('phone_number_2', $this->phone_number_2);
         $s->set('phone_number_2_ext', $this->phone_number_2_ext);
         $s->set('email', $this->email);
-        $s->set('hours_text', $this->hours_text);
+        $s->set('working_hours', $this->working_hours);
 
         $this->dispatch('notification', target: $this->targetNotify, type: 'success', message: 'Se han guardado los cambios.');
         $this->dispatch('site-contact-info-updated', id: $this->site->id);

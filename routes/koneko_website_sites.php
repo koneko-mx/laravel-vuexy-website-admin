@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\WebsitePageController;
+use Koneko\VuexyWebsiteAdmin\Website\Http\Controllers\WebsitePageController;
 
 // Contenido publico
 Route::get('/{slug}', WebsitePageController::class)

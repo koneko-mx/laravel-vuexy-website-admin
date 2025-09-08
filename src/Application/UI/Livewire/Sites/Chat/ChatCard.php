@@ -16,8 +16,8 @@ final class ChatCard extends Component
 
     public string $targetNotify = '#website-chat-settings-card .notification-container';
 
-    private const GROUP   = 'chat';
-    private const SECTION = 'website';
+    private const GROUP   = 'layout';
+    private const SECTION = 'chat';
 
     // --- Estado unificado ---
     #[Rule('required|in:none,whatsapp,crisp,tawkto,tidio,livechat')]
@@ -66,7 +66,7 @@ final class ChatCard extends Component
 
     private function settings(string $subgroup): KonekoSettingManager
     {
-        return settings(WebsiteModule::class)
+        return settings('website-admin')
             ->context(self::GROUP, self::SECTION, $subgroup)
             ->scope($this->site);
     }

@@ -10,15 +10,17 @@ use Livewire\Component;
 
 final class SchemaOrgCard extends Component
 {
-    public string $seoableType; // 'site' | 'content'
-    public int    $seoableId;
-    public bool   $isSite = false;
+    public string $scope; // 'site' | 'content'
+    public int    $scopeId;
+    //public bool   $isSite = false;
 
     public ?WebsiteSeoProfile $profile = null;
+    public ?WebsiteSite $website = null;
+    public ?WebsiteContent $content = null;
 
     // Modo
-    #[Rule('string|in:inherit,override,disable')]
-    public string $schema_mode = 'inherit'; // para site lo forzamos luego a override|disable
+    #[Rule('nullable|string|in:site,content,disable')]
+    public ?string $schema_mode = null;
 
     /** JSON-LD (cast array en el modelo) */
     public ?array $schema_org = null;
@@ -39,29 +41,29 @@ final class SchemaOrgCard extends Component
 
     private function buildPublicUrl(): ?string
     {
-        if ($this->isSite) {
-            $site = WebsiteSite::find($this->seoableId);
+        if ($this->scope == 'site') {
+            $site = WebsiteSite::find($this->scopeId);
             return $site?->getFullDomainUrl(); // https://dominio
         }
 
         // Content: https://dominio/slug
-        $content = WebsiteContent::with('site')->find($this->seoableId);
+        $content = WebsiteContent::with('site')->find($this->scopeId);
         if (!$content || !$content->site) return null;
+
         return rtrim($content->site->getFullDomainUrl(), '/') . '/' . ltrim($content->slug, '/');
     }
 
-    public function mount(string $seoableType, int $seoableId): void
+    public function mount(string $scope, int $scopeId): void
     {
-        $this->seoableType = $seoableType;
-        $this->seoableId   = $seoableId;
-        $this->isSite      = $seoableType === 'site';
+        $this->scope   = $scope;
+        $this->scopeId = $scopeId;
 
-        $owner = $this->isSite
-            ? WebsiteSite::query()->findOrFail($seoableId)
-            : WebsiteContent::query()->findOrFail($seoableId);
+        $owner = $this->scope == 'site'
+            ? WebsiteSite::query()->findOrFail($scopeId)
+            : WebsiteContent::query()->findOrFail($scopeId);
 
-        $scope = $this->isSite ? 'site' : 'content';
-        $this->profile = $owner->seoProfile()->firstOrCreate([], [ 'scope' => $scope ]);
+        $this->profile = $owner->seoProfile()->firstOrCreate([], [ 'scope' => $this->scope ]);
+        //$this->content = $this->isSite ? null : $owner;
 
         if ($url = $this->buildPublicUrl()) {
             $this->richResultsUrl = 'https://search.google.com/test/rich-results?url=' . urlencode($url);
@@ -72,9 +74,10 @@ final class SchemaOrgCard extends Component
 
     public function loadForm(): void
     {
-        $this->schema_mode = $this->profile->schema_mode->value;
+        $p = $this->profile;
 
-        $this->schema_org      = $this->profile->schema_org;
+        $this->schema_mode     = $p->schema_mode->value;
+        $this->schema_org      = $p->schema_org;
         $this->schema_org_text = $this->schema_org
             ? json_encode($this->schema_org, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)
             : '';
@@ -86,8 +89,8 @@ final class SchemaOrgCard extends Component
         if (!$this->preset) return;
 
         $baseUrl = null;
-        if ($this->isSite) {
-            $site = WebsiteSite::find($this->seoableId);
+        if ($this->scope) {
+            $site = WebsiteSite::find($this->scopeId);
             $baseUrl = $site?->getFullDomainUrl();
         }
 
@@ -123,14 +126,20 @@ final class SchemaOrgCard extends Component
             'schema_org'  => $data,
         ])->save();
 
+        if ($this->content) {
+            $this->content->fill([
+            ])->save();
+        }
+
         $this->dispatch('notification', target: $this->targetNotify, type: 'success', message: 'Schema.org guardado correctamente.');
     }
 
     public function resetForm(): void
     {
-        $this->profile->refresh();
-        $this->loadForm();
         $this->resetValidation();
+        $this->profile->refresh();
+        if($this->content) $this->content->refresh();
+        $this->loadForm();
         $this->dispatch('notification', target: $this->targetNotify, type: 'info', message: 'Cambios descartados.');
     }
 

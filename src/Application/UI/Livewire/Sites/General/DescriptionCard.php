@@ -26,9 +26,6 @@ final class DescriptionCard extends Component
     #[Rule('required|string|max:96')]
     public string $title = '';
 
-    #[Rule('nullable|string|max:70')]
-    public ?string $author = null;
-
     public function mount(WebsiteSite $site): void
     {
         $this->site = $site;
@@ -39,7 +36,6 @@ final class DescriptionCard extends Component
     {
         $this->domain = $this->site->domain;
         $this->title  = $this->site->title;
-        $this->author = $this->site->author;
     }
 
     public function save(): void
@@ -53,7 +49,6 @@ final class DescriptionCard extends Component
                 \Illuminate\Validation\Rule::unique('website_sites','domain')->ignore($this->site->id),
             ],
             'title'  => ['required','string','max:96'],
-            'author' => ['nullable','string','max:70'],
         ]);
 
         $domain = strtolower(trim($this->domain));
@@ -62,7 +57,6 @@ final class DescriptionCard extends Component
         $this->site->update([
             'domain' => $domain,
             'title'  => trim($this->title),
-            'author' => $this->author ? trim($this->author) : null,
         ]);
 
         // Limpiamos Cache

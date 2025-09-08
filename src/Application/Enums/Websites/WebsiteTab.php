@@ -15,8 +15,9 @@ enum WebsiteTab: string {
     case Social      = 'social';
     case Chat        = 'chat';
     case Integrations= 'integrations';
-    case Menus       = 'menus';
     case Pages       = 'pages';
+    case Menus       = 'menus';
+    case ContentBlocks = 'content-blocks';
 
     public function label(): string
     {
@@ -30,8 +31,9 @@ enum WebsiteTab: string {
             self::Social       => 'Redes sociales',
             self::Chat         => 'Chat',
             self::Integrations => 'Integraciones',
-            self::Menus        => 'Menús',
             self::Pages        => 'Páginas',
+            self::Menus        => 'Menús',
+            self::ContentBlocks => 'Bloques de contenido',
         };
     }
 
@@ -48,8 +50,9 @@ enum WebsiteTab: string {
             self::Social       => 'brand-facebook',
             self::Chat         => 'messages',
             self::Integrations => 'plug-connected',
-            self::Menus        => 'list-details',
             self::Pages        => 'file-description',
+            self::Menus        => 'menu-deep',
+            self::ContentBlocks => 'blocks',
         };
     }
 
@@ -58,7 +61,8 @@ enum WebsiteTab: string {
     {
         $ordered = [
             self::General, self::Template, self::Brand, self::Seo, self::Contact,
-            self::Locations, self::Social, self::Chat, self::Integrations, self::Menus, self::Pages,
+            self::Locations, self::Social, self::Chat, self::Integrations, self::Pages,
+            self::Menus, self::ContentBlocks,
         ];
 
         // Aquí puedes aplicar permisos: policies, roles, o features del sitio

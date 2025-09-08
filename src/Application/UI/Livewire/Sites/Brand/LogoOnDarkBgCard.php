@@ -39,9 +39,9 @@ final class LogoOnDarkBgCard extends Component
 
     public function loadForm(): void
     {
-        $handler    = app(WebsiteImageHandler::class);
-        $dark       = $handler->getImageLogoVars($this->site, 'dark');
-        $hDark      = $handler->getImageLogoVars($this->site, 'h_dark');
+        $handler = app(WebsiteImageHandler::class);
+        $dark    = $handler->getImageLogoVars($this->site, 'dark');
+        $hDark   = $handler->getImageLogoVars($this->site, 'h_dark');
 
         $this->upload_logo_dark   = null;
         $this->upload_logo_h_dark = null;

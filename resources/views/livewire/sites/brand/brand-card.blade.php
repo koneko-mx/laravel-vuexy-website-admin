@@ -6,7 +6,6 @@
         wire:submit.prevent="save"
     >
         <x-vuexy-admin::form.input model="brand_name" label="Nombre comercial" />
-        <x-vuexy-admin::form.input model="copyright" label="Copyright" />
         <x-vuexy-admin::form.textarea model="slogan" label="Eslogan de la marca" />
     </x-vuexy-admin::form.card-form>
 </div>
@@ -30,11 +29,11 @@
                             },
                         },
                     },
-                    copyright: {
+                    slogan: {
                         validators: {
                             stringLength: {
-                                max: 160,
-                                message: 'Máximo 160 caracteres.',
+                                max: 254,
+                                message: 'Máximo 254 caracteres.',
                             },
                         },
                     },

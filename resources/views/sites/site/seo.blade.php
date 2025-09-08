@@ -15,19 +15,19 @@
 <x-vuexy-admin::media.image-processor-scripts />
 
 <div class="row">
-    <div class="col-6">
-        @livewire('vuexy-website-admin::site.schema-org-card', ['seoableType' => 'site', 'seoableId' => $site->id])
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
+        @livewire('vuexy-website-admin::site.schema-org-card', ['scope' => 'site', 'scopeId' => $site->id])
     </div>
-    <div class="col-6">
-        @livewire('vuexy-website-admin::site.locale-card', ['seoableType' => 'site', 'seoableId' => $site->id])
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
+        @livewire('vuexy-website-admin::site.locale-card', ['scope' => 'site', 'scopeId' => $site->id])
     </div>
 </div>
 <div class="row">
-    <div class="col-10">
-        @livewire('vuexy-website-admin::site.og-card', ['seoableType' => 'site', 'seoableId' => $site->id])
+    <div class="col-xl-6 col-lg-10 col-sm-12 col-xs-12">
+        @livewire('vuexy-website-admin::site.og-card', ['scope' => 'site', 'scopeId' => $site->id])
     </div>
-    <div class="col-10">
-        @livewire('vuexy-website-admin::site.twitter-card', ['seoableType' => 'site', 'seoableId' => $site->id])
+    <div class="col-xl-6 col-lg-10 col-sm-12 col-xs-12">
+        @livewire('vuexy-website-admin::site.twitter-card', ['scope' => 'site', 'scopeId' => $site->id])
     </div>
 </div>
 

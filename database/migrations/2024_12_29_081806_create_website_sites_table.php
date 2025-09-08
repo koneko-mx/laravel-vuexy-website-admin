@@ -20,26 +20,20 @@ return new class extends Migration
             // Formato de Titulo
             $table->string('title', 96)->index();
 
+            // Autor, Brand y Copyright
+            $table->string('brand_name', 70)->nullable();
+            $table->string('slogan')->nullable();
+
             // Robots Directives
             $table->string('robots_mode', 16)->default('content')->index(); // ['suspended','site','content']
-            $table->boolean('site_noindex')->default(false)->index();
-            $table->boolean('site_nofollow')->default(false)->index();
+
             $table->boolean('www_redirect')->default(true);
             $table->boolean('force_https')->default(true);
 
-            // Autor, Brand y Copyright
-            $table->string('author', 70)->nullable();
-            $table->string('brand_name', 70)->nullable();
-            $table->string('copyright', 160)->nullable();
-            $table->string('slogan')->nullable();
-
-            // Template por defecto
-            $table->string('package')->nullable()->index();
-            $table->string('layout')->nullable()->index();
-            $table->string('theme_color', 16)->nullable();
-
-            // Estado y páginas especiales
+            // Estado
             $table->string('status', 16)->default('coming_soon')->index();
+
+            // Páginas especiales
             $table->unsignedMediumInteger('coming_soon_content_id')->nullable()->index();
             $table->unsignedMediumInteger('maintenance_content_id')->nullable()->index();
 

@@ -32,7 +32,7 @@
                     aria-current="{{ $isActive ? 'page' : 'false' }}"
                     title="{{ $tab->label() }}">
                     <i class="ti ti-{{ $tab->icon() }} ti-sm me-1_5" aria-hidden="true"></i>
-                    <span class="align-middle">{{ $tab->label() }}</span>
+                    <span class="align-middle text-wrap">{{ $tab->label() }}</span>
                 </a>
             </li>
         @endforeach

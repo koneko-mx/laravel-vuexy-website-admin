@@ -17,8 +17,8 @@ final class ContactFormCard extends Component
 
     public string $targetNotify = '#website-contact-form-card .notification-container';
 
-    private const GROUP    = 'contact';
-    private const SECTION  = 'website';
+    private const GROUP    = 'sendmail';
+    private const SECTION  = 'contact';
     private const SUBGROUP = 'form';
 
     // ---- Campos ----
@@ -43,7 +43,7 @@ final class ContactFormCard extends Component
 
     private function settings(): KonekoSettingManager
     {
-        return settings(WebsiteModule::class)
+        return settings('website-admin')
             ->context(self::GROUP, self::SECTION, self::SUBGROUP)
             ->scope($this->site);
     }

@@ -15,24 +15,41 @@ return new class extends Migration
             $table->mediumIncrements('id');
 
             // Dueño polimórfico
-            $table->string('seoable_type', 191);
-            $table->unsignedMediumInteger('seoable_id');
-            $table->string('scope', 16)->default('content')->index(); // 'site' | 'content'
+            $table->string('seoable_type', 191)->index();
+            $table->unsignedMediumInteger('seoable_id')->index();
+            $table->string('scope', 16)->default('content')->index();           // 'site' | 'content'
+
+            // Autor y Copyright
+            $table->string('author_mode', 12)->default('site')->index();        // site|content|disable
+            $table->string('author')->nullable();                               // Autor del website
+
+            $table->string('copyright_mode', 12)->default('site')->index();     // site|content|disable
+            $table->string('copyright')->nullable();                            // Copyright del website
 
             // Schema.org
-            $table->string('schema_mode', 12)->default('disable')->index(); // inherit|override|disable
+            $table->string('schema_mode', 12)->default('disable')->index();     // site|content|disable
             $table->json('schema_org')->nullable();
 
             // Favicon
-            $table->string('favicon_mode', 12)->default('disable')->index();
+            $table->string('favicon_mode', 12)->default('site')->index();       // site|content|disable
             $table->json('favicon')->nullable();
 
+            // Formato de Titulo
+            $table->string('title_mode', 12)->default('site')->index();         // site|content|disable
+            $table->string('title_format', 12)->nullable()->index();       // site|content|disable
+
+            // Template por defecto
+            $table->string('template_mode', 12)->default('site')->index();      // site|content|disable
+            $table->string('package')->nullable()->index();
+            $table->string('layout')->nullable()->index();
+            $table->string('theme_color', 16)->nullable();
+
             // Locale
-            $table->string('locale_mode', 12)->default('disable')->index();
-            $table->string('locale', 8)->default('es-MX')->index();
+            $table->string('locale_mode', 12)->default('site')->index();        // site|content|disable
+            $table->string('locale', 8)->nullable();
 
             // Open Graph
-            $table->string('og_mode', 12)->default('disable')->index(); // inherit|override|disable
+            $table->string('og_mode', 12)->default('site')->index();            // site|content|disable
             $table->string('og_type')->nullable();
             $table->string('og_title')->nullable();
             $table->text('og_description')->nullable();
@@ -41,7 +58,7 @@ return new class extends Migration
             $table->string('og_site_name')->nullable();
 
             // Twitter Card
-            $table->string('twitter_mode', 12)->default('disable')->index();
+            $table->string('twitter_mode', 12)->default('site')->index();       // site|content|disable
             $table->string('twitter_card')->nullable();
             $table->string('twitter_title')->nullable();
             $table->text('twitter_description')->nullable();
@@ -51,6 +68,7 @@ return new class extends Migration
 
             // Indices
             $table->unique(['seoable_type','seoable_id']);
+            $table->unique(['scope', 'seoable_id']);
         });
     }
 

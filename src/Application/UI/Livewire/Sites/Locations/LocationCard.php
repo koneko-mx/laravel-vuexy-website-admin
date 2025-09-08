@@ -16,8 +16,8 @@ final class LocationCard extends Component
 
     public string $targetNotify = '#website-location-card .notification-container';
 
-    private const GROUP    = 'contact';
-    private const SECTION  = 'website';
+    private const GROUP    = 'layout';
+    private const SECTION  = 'contact';
     private const SUBGROUP = 'location';
 
     #[Rule('nullable|string|max:120')]
@@ -52,7 +52,7 @@ final class LocationCard extends Component
 
     private function settings(): KonekoSettingManager
     {
-        return settings(WebsiteModule::class)
+        return settings('website-admin')
             ->context(self::GROUP, self::SECTION, self::SUBGROUP)
             ->scope($this->site);
     }

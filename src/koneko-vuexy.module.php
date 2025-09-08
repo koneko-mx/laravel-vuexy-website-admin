@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use Koneko\VuexyWebsiteAdmin\Application\Http\Middleware\WebsiteContentMiddleware;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Brand\{BrandCard, LogoOnDarkBgCard, LogoOnLightBgCard};
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Brand\{AuthorCopyrightCard, BrandCard, LogoOnDarkBgCard, LogoOnLightBgCard};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Chat\{ChatCard, WhatsappCard, TawkToCard};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Contact\{ContactInfoCard, ContactFormCard};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\General\{DescriptionCard, VisibilitySecurityCard, FaviconCard};
@@ -11,47 +10,21 @@ use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Integrations\{GoogleA
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Locations\BranchesCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Locations\LocationCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Manager\SiteOffCanvasForm;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Pages\PageOffCanvasForm;
+use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Pages\WebsitePagesTable;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Seo\{LocaleCard, OgCard, SchemaOrgCard, TwitterCard};
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Social\SocialCard;
 use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Sites\Template\{TemplateCard};
-/*
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Analytics\GoogleAnalytics\GoogleAnalyticsCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Analytics\GoogleSearchConsole\GoogleSearchConsoleCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Analytics\GoogleTags\GoogleTagsCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Analytics\PixelMeta\PixelMetaCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Blog\Article\{BlogArticlesTable, BlogArticleOffcanvasForm};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Blog\Category\{BlogCategoriesTable, BlogCategoryOffcanvasForm};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Blog\Comment\{BlogCommentsTable, BlogCommentOffcanvasForm};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Blog\Tag\{BlogTagsTable, BlogTagOffcanvasForm};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Content\Faq\{FaqIndex, FaqOffcanvasForm};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Contact\Form\ContactFormCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Contact\Info\{ContactInfoCard, LocationCard};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Content\Gallery\GalleryIndex;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Content\Legal\{LegalIndex, LegalOffCanvasForm};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Comunication\Messenger\MessengerCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Comunication\TawkTo\TawkToCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Comunication\Twitter\TwitterCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Comunication\Whatsapp\WhatsappCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Canonical\CanonicalIndex;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Jsonld\JsonldIndex;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\LocalLocationCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Manifest\ManifestCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\OgCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Sitemap\{SitemapIndex, SitemapUrlOffcanvasForm};
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\SocialCards\SocialCardsIndex;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Seo\Robots\RobotsCard;
-use Koneko\VuexyWebsiteAdmin\Application\UI\Livewire\Translate\Google\GoogleTanslateCard;
-*/
-
 use Koneko\VuexyWebsiteAdmin\Console\Commands\{SitemapGenerate, WebsiteCacheHelperCommand, WebsiteContentHelperCommand, WebsiteMenuHelperCommand, WebsiteSeoHelperCommand};
 use Koneko\VuexyWebsiteAdmin\Models\WebsiteSite;
+use Koneko\VuexyWebsiteAdmin\Website\Http\Middleware\WebsiteRuntimeMiddleware;
 
 return [
     // 🌐 Identidad del Módulo
     'name' => 'Website admin',
     'description' => 'Gestión de contenido del sitio web.',
     'type' => 'plugin',
-    'tags' => ['koneko-official', 'website', 'admin', 'website-admin', 'website-content', 'website-management'],
+    'tags' => ['koneko-official', 'website', 'admin', 'website-admin', 'website-content', 'website-runtime', 'website-management'],
 
     // ⚙️ Namespace de configuraciones Koneko Vuexy Admin
     'componentNamespace' => 'website-admin',
@@ -69,7 +42,7 @@ return [
 
     // 🏭 Proveedores de servicio, Middleware y Aliases (runtime)
     'middleware' => [
-        'website-content' => WebsiteContentMiddleware::class,
+        'website-runtime' => WebsiteRuntimeMiddleware::class,
     ],
 
     // 📦 migraciones
@@ -88,7 +61,7 @@ return [
             ],
         ],
         [
-            'middleware' => ['web', 'website-content'],
+            'middleware' => ['web', 'website-runtime'],
             'paths' => [
                 'routes/koneko_website_sites.php',
             ],
@@ -116,6 +89,7 @@ return [
 
             // Marca
             'site.brand-card'            => BrandCard::class,
+            'site.author-copyright-card' => AuthorCopyrightCard::class,
             'site.logo-on-light-bg-card' => LogoOnLightBgCard::class,
             'site.logo-on-dark-bg-card'  => LogoOnDarkBgCard::class,
 
@@ -152,7 +126,8 @@ return [
             'site.menu-card' => MenuCard::class,
 
             // Páginas
-            'site.page-card' => PageCard::class,
+            'site.pages-table'          => WebsitePagesTable::class,
+            'site.pages-offcanvas-form' => PageOffCanvasForm::class,
 
 
 

@@ -2,20 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use Koneko\VuexyAdmin\Support\Routing\RouteScope;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\AnalyticsController;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\ComunicationController;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\ContactController;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\ContentController;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\SeoController;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\SettingsController;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\TranstaleController;
-use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\WebsitesController;
+use Koneko\VuexyWebsiteAdmin\Application\Http\Controllers\WebsitesAdminController;
 
 RouteScope::auto(__FILE__, 'website-admin', function (RouteScope $r) {
     // Web & SEO / Configuración general
-    $r->route('sitios-web', 'websites.manager.', WebsitesController::class, function () {
+    $r->route('sitios-web', 'websites.manager.', WebsitesAdminController::class, function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/{site}/{tab}', 'site')->name('site');
+        Route::get('/{site}/{tab}', 'siteManager')->name('site');
+    });
+
+    $r->route('sitios-web', 'websites.pages.', WebsitesAdminController::class, function () {
+        Route::get('/{site}/pages/{page}/edit', 'pageEdit')->name('edit');
     });
 
     /*

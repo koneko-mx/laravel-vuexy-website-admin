@@ -13,10 +13,10 @@
 @endsection
 
 <div class="row">
-    <div class="col-lg-8 col-md-6">
-        @livewire('vuexy-website-admin::site.template-card', ['site' => $site])
+    <div class="col-xl-6 col-lg-12">
+        @livewire('vuexy-website-admin::site.template-card', ['seoableType' => 'site', 'seoableId' => $site->id])
     </div>
-    <div class="col-lg-8 col-md-12">
-        @livewire('vuexy-website-admin::site.favicon-card', ['site' => $site])
+    <div class="col-xl-6 col-lg-12">
+        @livewire('vuexy-website-admin::site.favicon-card', ['seoableType' => 'site', 'seoableId' => $site->id])
     </div>
 </div>

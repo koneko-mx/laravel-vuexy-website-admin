@@ -43,8 +43,8 @@ final class LogoOnLightBgCard extends Component
     public function loadForm(): void
     {
         $handler = app(WebsiteImageHandler::class);
-        $regular   = $handler->getImageLogoVars($this->site);
-        $horizontal= $handler->getImageLogoVars($this->site, 'h'); // <- variante horizontal vía parámetro
+        $regular   = $handler->getImageLogoVars($this->site, 'default');
+        $horizontal= $handler->getImageLogoVars($this->site, 'h_default'); // <- variante horizontal vía parámetro
 
         $this->upload_logo   = null;
         $this->upload_logo_h = null;
@@ -56,7 +56,7 @@ final class LogoOnLightBgCard extends Component
     {
         $this->validateOnly('upload_logo');
         if ($this->upload_logo) {
-            app(WebsiteImageHandler::class)->processAndSaveImageLogo($this->upload_logo, $this->site /* type='' regular */);
+            app(WebsiteImageHandler::class)->processAndSaveImageLogo($this->upload_logo, $this->site);
         }
 
         $this->loadForm();
@@ -67,7 +67,7 @@ final class LogoOnLightBgCard extends Component
     {
         $this->validateOnly('upload_logo_h');
         if ($this->upload_logo_h) {
-            app(WebsiteImageHandler::class)->processAndSaveImageLogo($this->upload_logo_h, $this->site, 'h'); // <- tipo horizontal
+            app(WebsiteImageHandler::class)->processAndSaveImageLogo($this->upload_logo_h, $this->site, 'h_default');
         }
 
         $this->loadForm();

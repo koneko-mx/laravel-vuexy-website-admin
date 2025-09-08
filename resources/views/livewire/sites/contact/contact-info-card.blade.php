@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <x-vuexy-admin::form.input model="hours_text" id="hours_text" label="Horario (texto corto)" icon="ti ti-clock" placeholder="Lun–Vie 9:00–18:00" autocomplete="off" />
+        <x-vuexy-admin::form.input model="working_hours" id="working_hours" label="Horario (texto corto)" icon="ti ti-clock" placeholder="Lun–Vie 9:00–18:00" autocomplete="off" />
     </x-vuexy-admin::form.card-form>
 </div>
 
@@ -118,7 +118,7 @@
             }
           }
         },
-        hours_text: {
+        working_hours: {
           validators: {
             stringLength: { max: 120, message: 'Máx. 120 caracteres.' }
           }

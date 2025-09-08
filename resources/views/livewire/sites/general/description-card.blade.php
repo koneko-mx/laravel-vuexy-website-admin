@@ -8,7 +8,6 @@
     >
         <x-vuexy-admin::form.input model="domain" id="domain" label="Nombre de dominio" icon="ti ti-world" placeholder="ejemplo.com" />
         <x-vuexy-admin::form.input model="title" id="title" label="Titulo del sitio" icon="ti ti-label-important" placeholder="Titulo del sitio" />
-        <x-vuexy-admin::form.input model="author" id="author" label="Autor del sitio" icon="ti ti-user" placeholder="Autor del sitio" />
     </x-vuexy-admin::form.card-form>
 </div>
 
@@ -40,20 +39,6 @@
                             stringLength: {
                                 max: 96,
                                 message: 'Máximo 96 caracteres.',
-                            },
-                        },
-                    },
-                    author: {
-                        validators: {
-                            // Opcional: solo valida si hay valor
-                            stringLength: {
-                                max: 70,
-                                message: 'Máximo 70 caracteres.',
-                            },
-                            regexp: {
-                                // Letras, números, espacios y puntuación común en nombres
-                                regexp: /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 .,'’\-()]+$/,
-                                message: 'Solo letras, números y puntuación básica.',
                             },
                         },
                     },

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->mediumIncrements('id');
 
             $table->unsignedSmallInteger('site_id')->index();
-            //$table->string('type', 16)->default('page')->index();   // Enum: Content, Landing, Product, Category Blog, Partial
+            $table->string('type', 16)->default('page')->index();   // Enum: Content, Landing, Product, Category Blog, Partial
 
             // Metadata
             $table->string('title')->index();                       // Título del website
@@ -23,24 +23,12 @@ return new class extends Migration
             $table->mediumText('description')->nullable();          // Descripción del website
             $table->json('keywords')->nullable();
 
-            // Autor y Copyright
-            $table->boolean('overwrite_author')->default(false)->index();
-            $table->string('author')->nullable();                   // Autor del website
-
-            $table->boolean('overwrite_copyright')->default(false)->index();
-            $table->string('copyright')->nullable();                // Copyright del website
-
             // Canonical URL
             $table->string('canonical_url')->nullable();
 
             // Robots Directives
             $table->boolean('noindex')->default(false)->index();
             $table->boolean('nofollow')->default(false)->index();
-
-            // Template (por-Contenido opcional)
-            $table->string('package')->nullable()->index();
-            $table->string('layout')->nullable()->index();
-            $table->string('theme_color', 16)->nullable();
 
             // Bloques de contenido (JSON)
             $table->json('header_blocks')->nullable();

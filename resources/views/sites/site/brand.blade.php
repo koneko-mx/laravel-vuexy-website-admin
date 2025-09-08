@@ -13,12 +13,18 @@
 @endsection
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
         @livewire('vuexy-website-admin::site.brand-card', ['site' => $site])
-
-        @livewire('vuexy-website-admin::site.logo-on-dark-bg-card', ['site' => $site])
     </div>
-    <div class="col-6">
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
+        @livewire('vuexy-website-admin::site.author-copyright-card', ['seoableType' => 'site', 'seoableId' => $site->id])
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
         @livewire('vuexy-website-admin::site.logo-on-light-bg-card', ['site' => $site])
+    </div>
+    <div class="col-xl-6 col-md-6 col-sm-6 col-xs-12">
+        @livewire('vuexy-website-admin::site.logo-on-dark-bg-card', ['site' => $site])
     </div>
 </div>

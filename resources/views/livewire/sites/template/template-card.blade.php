@@ -25,7 +25,7 @@
                 <label for="template" class="form-label">Plantilla</label>
                 <select id="template" name="template" wire:model="template" class="form-select" data-choices data-choices-search-true>
                     <option value="">Seleccione una plantilla</option>
-                    @foreach ($template_options as $group => $templates)
+                    @foreach ($template_list as $group => $templates)
                         <optgroup label="{{ $group }}">
                             @foreach ($templates['items'] as $key => $tpl)
                                 <option value="{{ $key }}">{{ $tpl }}</option>

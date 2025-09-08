@@ -16,8 +16,8 @@ final class SocialCard extends Component
 
     public string $targetNotify = '#website-social-settings-card .notification-container';
 
-    private const GROUP     = 'social';
-    private const SECTION   = 'website';
+    private const GROUP     = 'layout';
+    private const SECTION   = 'social';
     private const SUBGROUP  = 'links';
     private const DEFAULT_CC= 'MX'; // País por defecto para 10 dígitos sin prefijo
 
@@ -50,7 +50,7 @@ final class SocialCard extends Component
 
     private function settings(): KonekoSettingManager
     {
-        return settings(WebsiteModule::class)
+        return settings('website-admin')
             ->context(self::GROUP, self::SECTION, self::SUBGROUP)
             ->scope($this->site);
     }

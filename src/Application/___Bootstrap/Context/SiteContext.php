@@ -28,10 +28,6 @@ class SiteContext
         $this->content = WebsiteContent::where('site_id', $this->website->id)
             ->bySlug($slug)
             ->first();
-
-        if ($this->content === null) {
-            throw new HttpException(404, 'Contenido no publicado.');
-        }
     }
 
     /*
@@ -142,7 +138,7 @@ class SiteContext
 
     private function getThemeColor(): string
     {
-        return $this->website->theme_color;
+        return $this-> $this->website->theme_color;
     }
 
     private function getManifest(): array

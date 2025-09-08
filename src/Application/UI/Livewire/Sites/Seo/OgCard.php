@@ -15,18 +15,19 @@ final class OgCard extends Component
 {
     use WithFileUploads;
 
-    public string $seoableType;   // 'site' | 'content'
-    public int    $seoableId;
+    public string $scope; // 'site' | 'content'
+    public int    $scopeId;
     public bool   $isSite = false;
 
     public ?WebsiteSeoProfile $profile = null;
+    public ?WebsiteContent $content = null;
 
     public ?float $source_aspect = null;
     public ?int   $source_w = null;
     public ?int   $source_h = null;
 
-    #[Rule('string|in:inherit,override,disable')]
-    public string $og_mode = 'inherit'; // default para Content; Site se corrige en mount()
+    #[Rule('nullable|string|in:site,content,disable')]
+    public ?string $og_mode = null;
 
     // Campos OG
     public ?string $og_type  = null;
@@ -60,18 +61,19 @@ final class OgCard extends Component
     public ?string $computed_site_url = null;
     public ?string $computed_page_url = null;
 
-    public function mount(string $seoableType, int $seoableId): void
+    public function mount(string $scope, int $scopeId): void
     {
-        $this->seoableType = $seoableType;
-        $this->seoableId   = $seoableId;
-        $this->isSite      = $seoableType === 'site';
+        $this->scope = $scope;
+        $this->scopeId   = $scopeId;
+        $this->isSite      = $scope === 'site';
 
         $owner = $this->isSite
-            ? WebsiteSite::query()->findOrFail($seoableId)
-            : WebsiteContent::query()->findOrFail($seoableId);
+            ? WebsiteSite::query()->findOrFail($scopeId)
+            : WebsiteContent::query()->findOrFail($scopeId);
 
         $scope = $this->isSite ? 'Site' : 'Content';
         $this->profile = $owner->seoProfile()->firstOrCreate([], ['scope' => $scope]);
+        $this->content = $this->isSite ? null : $owner;
 
         $this->loadForm();
     }
@@ -79,12 +81,13 @@ final class OgCard extends Component
     public function loadForm(): void
     {
         $p = $this->profile;
+        $c = $this->content;
 
-        $this->og_mode = $this->profile->og_mode->value;
+        $this->og_mode = $c ? $c->og_mode->value : null;
 
-        $this->og_type   = $p->og_type;
-        $this->og_image  = $p->og_image;
-        $this->og_url    = $p->og_url;
+        $this->og_type   = $p->og_type ?: $this->og_type;
+        $this->og_image  = $p->og_image ?: $this->og_image;
+        $this->og_url    = $p->og_url ?: $this->og_url;
 
         // Defaults de procesado
         $this->image_fit     = 'cover';
@@ -129,7 +132,7 @@ final class OgCard extends Component
                 ->forContext([
                     'module' => 'website',
                     'scope'  => $this->isSite ? 'site' : 'content',
-                    'owner'  => $this->seoableId,
+                    'owner'  => $this->scopeId,
                 ]);
 
             // Si keep ⇒ intenta usar aspecto de origen (si lo conocemos), si no, cae a target_aspect
@@ -169,11 +172,16 @@ final class OgCard extends Component
         }
 
         $this->profile->fill([
-            'og_mode'        => $this->og_mode,
             'og_type'        => $this->og_type ?: null,
             'og_image'       => $this->og_image ?: null,
             'og_url'         => $this->og_url ?: null,
         ])->save();
+
+        if ($this->content) {
+            $this->content->fill([
+                'og_mode' => $this->og_mode,
+            ])->save();
+        }
 
         $this->dispatch('notification', target: $this->targetNotify, type: 'success', message: 'Open Graph guardado.');
         $this->upload_og_image = null;
@@ -181,9 +189,10 @@ final class OgCard extends Component
 
     public function resetForm(): void
     {
-        $this->profile->refresh();
-        $this->loadForm();
         $this->resetValidation();
+        $this->profile->refresh();
+        if($this->content) $this->content->refresh();
+        $this->loadForm();
         $this->dispatch('notification', target: $this->targetNotify, type: 'info', message: 'Cambios descartados.');
     }
 

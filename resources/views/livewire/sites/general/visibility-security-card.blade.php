@@ -10,8 +10,8 @@
         <hr>
         <x-vuexy-admin::form.select model="status" label="Estado del sitio" :options="$status_options" no-placeholder />
         <hr>
-        <x-vuexy-admin::form.select model="coming_soon_content_id" label="Pagina de proximamente" :options="$contents_options" />
-        <x-vuexy-admin::form.select model="maintenance_content_id" label="Pagina de mantenimiento" :options="$contents_options" />
+        <x-vuexy-admin::form.select model="coming_soon_content_id" label="Pagina de proximamente" :options="$pages_options" />
+        <x-vuexy-admin::form.select model="maintenance_content_id" label="Pagina de mantenimiento" :options="$pages_options" />
     </x-vuexy-admin::form.card-form>
 </div>
 

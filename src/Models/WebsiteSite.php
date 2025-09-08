@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Koneko\VuexyWebsiteAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 use Koneko\VuexyAdmin\Support\Traits\Audit\{HasCreator,HasUpdater};
 use Koneko\VuexyAdmin\Support\Traits\Model\HasVuexyModelMetadata;
-use Koneko\VuexyWebsiteAdmin\Application\Enums\Websites\WebsiteRobotsMode;
-use Koneko\VuexyWebsiteAdmin\Application\Enums\Websites\WebsiteSiteStatus;
+use Koneko\VuexyWebsiteAdmin\Application\Enums\Websites\{WebsiteRobotsMode, WebsiteSiteStatus};
 
 class WebsiteSite extends Model
 {
@@ -29,11 +27,10 @@ class WebsiteSite extends Model
 
     protected $fillable = [
         'domain','title',
-        'robots_mode','site_noindex','site_nofollow',
-        'www_redirect','force_https',
-        'author','brand_name','copyright','slogan',
-        'package','layout','theme_color',
-        'status','coming_soon_content_id','maintenance_content_id',
+        'brand_name','slogan',
+        'robots_mode','www_redirect','force_https',
+        'status',
+        'coming_soon_content_id','maintenance_content_id',
         'created_by','updated_by'
     ];
 
@@ -41,8 +38,6 @@ class WebsiteSite extends Model
         'robots_mode'    => WebsiteRobotsMode::class,
         'www_redirect'   => 'boolean',
         'force_https'    => 'boolean',
-        'site_noindex'   => 'boolean',
-        'site_nofollow'  => 'boolean',
         'status'         => WebsiteSiteStatus::class,
     ];
 

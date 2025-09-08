@@ -32,14 +32,14 @@
     >
         {{-- Selector de modo --}}
         <x-vuexy-website-admin::form.mode-toggle
-            :is-site="$isSite"
             model="twitter_mode"
             group="tw"
+            :scope="$scope"
             :value="$twitter_mode"
             {{-- el contenedor padre define dónde togglear --}}
             data-scope="#website-twitter-card"
-            data-show-when-override=".display-enable"
-            data-show-when-inherit=".display-inherit"
+            data-show-when-enable=".display-enabled"
+            data-show-when-inherit=".display-inherited"
         />
 
         {{-- Mensaje modo "heredar" (solo Content). Solo JS, no Blade --}}

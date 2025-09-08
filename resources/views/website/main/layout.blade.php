@@ -7,11 +7,10 @@
     }
 @endphp
 
-
 @extends("{$_layout['package']}::layouts.{$_layout['template']}.master")
 
 @section('header')
-    @foreach ($_headerBlocks as $headerBlock)
+    @foreach ($_blocks['header'] as $headerBlock)
         @if ($headerBlock['type'] === 'blade-file')
             @include($headerBlock['path'])
         @endif
@@ -19,7 +18,36 @@
 @endsection
 
 @section('content')
-    @foreach ($_contentBlocks as $contentBlock)
+    @php
+    /*
+    echo " ----- social ----- ";
+    dump($_social);
+
+    echo " ----- contact ----- ";
+    dump($_contact);
+
+
+    echo " ----- seo ----- ";
+    dump($_seo);
+
+    echo " ----- layout ----- ";
+    dump($_layout);
+
+    echo " ----- brand ----- ";
+    dump($_brand);
+
+    echo " ----- img ----- "
+    dump($_img);
+
+    echo " ----- blocks ----- "
+    dump($_blocks);
+
+    echo " ----- chat ----- "
+    dump($_chat);
+    */
+    @endphp
+
+    @foreach ($_blocks['content'] as $contentBlock)
         @if ($contentBlock['type'] === 'blade-file')
             @include($contentBlock['path'])
         @endif
@@ -27,7 +55,7 @@
 @endsection
 
 @section('footer')
-    @foreach ($_footerBlocks as $footerBlock)
+    @foreach ($_blocks['footer'] as $footerBlock)
         @if ($footerBlock['type'] === 'blade-file')
             @include($footerBlock['path'])
         @endif
